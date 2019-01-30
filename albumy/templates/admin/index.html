@@ -1,13 +1,13 @@
 {% extends 'base.html' %}
 {% from 'bootstrap/nav.html' import render_breadcrumb_item %}
 
-{% block title %}Dashboard{% endblock %}
+{% block title %}管理后台{% endblock %}
 
 {% block navbar %}
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
             <a class="navbar-brand" href="{{ url_for('admin.index') }}">
-                <img src="{{ url_for('static', filename='favicon.ico') }}" alt="Albumy"> Albumy Dashboard
+                <img src="{{ url_for('static', filename='favicon.ico') }}" alt="Albumy"> 管理后台
             </a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01"
                     aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
@@ -16,16 +16,16 @@
 
             <div class="collapse navbar-collapse" id="navbarColor01">
                 <div class="navbar-nav ml-auto">
-                    {{ render_nav_item('main.index', 'Return Albumy') }}
+                    {{ render_nav_item('main.index', '返回主页') }}
                     <div class="dropdown nav-item">
                         <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button"
-                           aria-expanded="false">Manage<span class="caret"></span>
+                           aria-expanded="false">管理<span class="caret"></span>
                         </a>
                         <div class="dropdown-menu dropdown-menu-right" role="menu">
-                            <a class="dropdown-item" href="{{ url_for('admin.manage_photo') }}">Photos</a>
-                            <a class="dropdown-item" href="{{ url_for('admin.manage_user') }}">Users</a>
-                            <a class="dropdown-item" href="{{ url_for('admin.manage_tag') }}">Tags</a>
-                            <a class="dropdown-item" href="{{ url_for('admin.manage_comment') }}">Comments</a>
+{#                            <a class="dropdown-item" href="{{ url_for('admin.manage_photo') }}">Photos</a>#}
+                            <a class="dropdown-item" href="{{ url_for('admin.manage_user') }}">用户</a>
+                            <a class="dropdown-item" href="{{ url_for('admin.manage_tag') }}">任务</a>
+{#                            <a class="dropdown-item" href="{{ url_for('admin.manage_comment') }}">Comments</a>#}
                         </div>
                     </div>
                     <div class="dropdown nav-item">
@@ -36,16 +36,16 @@
                             <span class="caret"></span>
                         </a>
                         <div class="dropdown-menu dropdown-menu-right" role="menu">
-                            <h6 class="dropdown-header">Logged in as {{ current_user.username }}</h6>
+                            <h6 class="dropdown-header">欢迎 {{ current_user.username }}</h6>
                             <a class="dropdown-item" href="{{ url_for('user.index', username=current_user.username) }}">
-                                <span class="oi oi-person"></span> My Home
+                                <span class="oi oi-person"></span> 我的任务
                             </a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="{{ url_for('user.edit_profile') }}">
-                                <span class="oi oi-cog"></span> Settings
+                                <span class="oi oi-cog"></span> 资料编辑
                             </a>
                             <a class="dropdown-item" href="{{ url_for('auth.logout') }}">
-                                <span class="oi oi-power-standby"></span> Logout
+                                <span class="oi oi-power-standby"></span> 退出账户
                             </a>
                         </div>
                     </div>
@@ -58,7 +58,7 @@
 {% block content %}
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-            {{ render_breadcrumb_item('admin.index', 'Dashboard Home') }}
+            {{ render_breadcrumb_item('admin.index', '后台主页') }}
         </ol>
     </nav>
     <div class="row">

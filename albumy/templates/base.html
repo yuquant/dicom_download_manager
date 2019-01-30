@@ -6,7 +6,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     {% block head %}
-        <title>{% block title %}{% endblock %} - Albumy</title>
+        <title>{% block title %}{% endblock %} - 北大医院数据管理平台</title>
         <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
         {% block styles %}
             <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
@@ -21,7 +21,7 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container">
             <a class="navbar-brand" href="{{ url_for('main.index') }}">
-                <img src="{{ url_for('static', filename='favicon.ico') }}" alt="Albumy">
+                <img src="{{ url_for('static', filename='favicon.ico') }}" alt="">
             </a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01"
                     aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
@@ -30,27 +30,28 @@
 
             <div class="collapse navbar-collapse" id="navbarColor01">
                 <div class="navbar-nav mr-auto">
-                    {{ render_nav_item('main.index', 'Home') }}
-                    {{ render_nav_item('main.explore', 'Explore') }}
-                    <form class="form-inline my-2 my-lg-0" action="{{ url_for('main.search') }}">
-                        <input type="text" name="q" class="form-control mr-sm-1" placeholder="Photo, tag or user"
-                               required>
-                        <button class="btn btn-light my-2 my-sm-0" type="submit">
-                            <span class="oi oi-magnifying-glass"></span>
-                        </button>
-                    </form>
+                    {{ render_nav_item('main.index', '任务添加') }}
+                    {{ render_nav_item('main.explore', '任务进度') }}
+                    {{ render_nav_item('main.explore', '所有任务') }}
+{#                    <form class="form-inline my-2 my-lg-0" action="{{ url_for('main.search') }}">#}
+{#                        <input type="text" name="q" class="form-control mr-sm-1" placeholder="Photo, tag or user"#}
+{#                               required>#}
+{#                        <button class="btn btn-light my-2 my-sm-0" type="submit">#}
+{#                            <span class="oi oi-magnifying-glass"></span>#}
+{#                        </button>#}
+{#                    </form>#}
                 </div>
                 <div class="navbar-nav ml-auto">
                 {% if current_user.is_authenticated %}
-                    <a class="nav-item nav-link" href="{{ url_for('main.show_notifications', filter='unread') }}">
-                        <span class="oi oi-bell"></span>
-                        <span id="notification-badge"
-                              class="{% if notification_count == 0 %}hide{% endif %} badge badge-danger badge-notification"
-                              data-href="{{ url_for('ajax.notifications_count') }}">{{ notification_count }}</span>
-                    </a>
-                    <a class="nav-item nav-link" href="{{ url_for('main.upload') }}" title="Upload">
-                        <span class="oi oi-cloud-upload"></span>&nbsp;&nbsp;
-                    </a>
+{#                    <a class="nav-item nav-link" href="{{ url_for('main.show_notifications', filter='unread') }}">#}
+{#                        <span class="oi oi-bell"></span>#}
+{#                        <span id="notification-badge"#}
+{#                              class="{% if notification_count == 0 %}hide{% endif %} badge badge-danger badge-notification"#}
+{#                              data-href="{{ url_for('ajax.notifications_count') }}">{{ notification_count }}</span>#}
+{#                    </a>#}
+{#                    <a class="nav-item nav-link" href="{{ url_for('main.upload') }}" title="Upload">#}
+{#                        <span class="oi oi-cloud-upload"></span>&nbsp;&nbsp;#}
+{#                    </a>#}
                     <div class="dropdown nav-item">
                         <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button"
                            aria-expanded="false">
@@ -59,27 +60,27 @@
                             <span class="caret"></span>
                         </a>
                         <div class="dropdown-menu dropdown-menu-right" role="menu">
-                            <h6 class="dropdown-header">Logged in as {{ current_user.username }}</h6>
+                            <h6 class="dropdown-header">欢迎 {{ current_user.name }}</h6>
                             <a class="dropdown-item" href="{{ url_for('user.index', username=current_user.username) }}">
-                                <span class="oi oi-person"></span> My Home
+                                <span class="oi oi-person"></span> 我的任务
                             </a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="{{ url_for('user.edit_profile') }}">
-                                <span class="oi oi-cog"></span> Settings
+                                <span class="oi oi-cog"></span> 资料编辑
                             </a>
                             {% if current_user.can('MODERATE') %}
                                 <a class="dropdown-item" href="{{ url_for('admin.index') }}">
-                                    <span class="oi oi-dashboard"></span> Dashboard
+                                    <span class="oi oi-dashboard"></span> 管理后台
                                 </a>
                             {% endif %}
                             <a class="dropdown-item" href="{{ url_for('auth.logout') }}">
-                                <span class="oi oi-power-standby"></span> Logout
+                                <span class="oi oi-power-standby"></span> 退出账户
                             </a>
                         </div>
                     </div>
                 {% else %}
-                    <a class="btn btn-outline-primary" href="{{ url_for('auth.login') }}">Login</a>&nbsp;&nbsp;
-                    <a class="btn btn-primary" href="{{ url_for('auth.register') }}">Join Albumy</a>
+                    <a class="btn btn-outline-primary" href="{{ url_for('auth.login') }}">登陆</a>&nbsp;&nbsp;
+                    <a class="btn btn-primary" href="{{ url_for('auth.register') }}">注册</a>
                 {% endif %}
                 </div>
             </div>
@@ -99,15 +100,15 @@
         {% block footer %}
             <footer>
                 <p class="float-left">
-                    <small>&copy; 2018
-                        <a href="http://greyli.com" title="Written by Grey Li">Grey Li</a> -
-                        <a href="https://github.com/greyli/albumy" title="Fork me on GitHub">GitHub</a> -
-                        <a href="http://helloflask.com" title="A HelloFlask project">HelloFlask</a>
+                    <small>&copy; 2019
+{#                        <a href="http://greyli.com" title="Written by Grey Li">Grey Li</a> -#}
+{#                        <a href="https://github.com/greyli/albumy" title="Fork me on GitHub">GitHub</a> -#}
+                        <a href="" title="北京大学第一医院医学影像科">北京大学第一医院医学影像科</a>
                     </small>
                 </p>
-                <p class="float-right">
-                    <small>Capture and share every wonderful moment.</small>
-                </p>
+{#                <p class="float-right">#}
+{#                    <small>数据管理平台</small>#}
+{#                </p>#}
             </footer>
         {% endblock %}
     </div>

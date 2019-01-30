@@ -13,10 +13,10 @@ from albumy.models import User, Role
 
 
 class EditProfileAdminForm(EditProfileForm):
-    email = StringField('Email', validators=[DataRequired(), Length(1, 254), Email()])
-    role = SelectField('Role', coerce=int)
-    active = BooleanField('Active')
-    confirmed = BooleanField('Confirmed')
+    email = StringField('邮箱', validators=[DataRequired(), Length(1, 254), Email()])
+    role = SelectField('角色', coerce=int)
+    active = BooleanField('激活')
+    # confirmed = BooleanField('Confirmed')
     submit = SubmitField()
 
     def __init__(self, user, *args, **kwargs):
@@ -27,8 +27,8 @@ class EditProfileAdminForm(EditProfileForm):
 
     def validate_username(self, field):
         if field.data != self.user.username and User.query.filter_by(email=field.data).first():
-            raise ValidationError('The username is already in use.')
+            raise ValidationError('该用户名已经被注册.')
 
     def validate_email(self, field):
         if field.data != self.user.email and User.query.filter_by(email=field.data).first():
-            raise ValidationError('The email is already in use.')
+            raise ValidationError('该邮箱已经被注册.')

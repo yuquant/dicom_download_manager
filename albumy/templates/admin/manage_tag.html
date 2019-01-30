@@ -1,13 +1,13 @@
 {% extends 'admin/index.html' %}
 {% from 'bootstrap/pagination.html' import render_pagination %}
 
-{% block title %}Manage Tags{% endblock %}
+{% block title %}任务管理{% endblock %}
 
 {% block content %}
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-            {{ render_breadcrumb_item('admin.index', 'Dashboard Home') }}
-            {{ render_breadcrumb_item('admin.manage_tag', 'Manage Tag') }}
+            {{ render_breadcrumb_item('admin.index', '后台主页') }}
+            {{ render_breadcrumb_item('admin.manage_tag', '任务管理') }}
         </ol>
     </nav>
     <div class="page-header">

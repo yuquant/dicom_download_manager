@@ -14,14 +14,14 @@ from albumy.models import User
 
 
 class EditProfileForm(FlaskForm):
-    name = StringField('Name', validators=[DataRequired(), Length(1, 30)])
-    username = StringField('Username', validators=[DataRequired(), Length(1, 20),
+    name = StringField('姓名', validators=[DataRequired(), Length(1, 30)])
+    username = StringField('用户名', validators=[DataRequired(), Length(1, 20),
                                                    Regexp('^[a-zA-Z0-9]*$',
                                                           message='The username should contain only a-z, A-Z and 0-9.')])
-    website = StringField('Website', validators=[Optional(), Length(0, 255)])
-    location = StringField('City', validators=[Optional(), Length(0, 50)])
-    bio = TextAreaField('Bio', validators=[Optional(), Length(0, 120)])
-    submit = SubmitField()
+    # website = StringField('Website', validators=[Optional(), Length(0, 255)])
+    location = StringField('学号', validators=[Optional(), Length(0, 50)])
+    bio = TextAreaField('简介', validators=[Optional(), Length(0, 120)])
+    submit = SubmitField('提交')
 
     def validate_username(self, field):
         if field.data != current_user.username and User.query.filter_by(username=field.data).first():
@@ -29,11 +29,11 @@ class EditProfileForm(FlaskForm):
 
 
 class UploadAvatarForm(FlaskForm):
-    image = FileField('Upload', validators=[
+    image = FileField('上传头像', validators=[
         FileRequired(),
-        FileAllowed(['jpg', 'png'], 'The file format should be .jpg or .png.')
+        FileAllowed(['jpg', 'png'], '文件扩展名只支持 .jpg 和 .png.')
     ])
-    submit = SubmitField()
+    submit = SubmitField('提交')
 
 
 class CropAvatarForm(FlaskForm):
@@ -41,20 +41,20 @@ class CropAvatarForm(FlaskForm):
     y = HiddenField()
     w = HiddenField()
     h = HiddenField()
-    submit = SubmitField('Crop and Update')
+    submit = SubmitField('提交')
 
 
 class ChangeEmailForm(FlaskForm):
-    email = StringField('New Email', validators=[DataRequired(), Length(1, 254), Email()])
-    submit = SubmitField()
+    email = StringField('新邮箱', validators=[DataRequired(), Length(1, 254), Email()])
+    submit = SubmitField('提交')
 
 
 class ChangePasswordForm(FlaskForm):
-    old_password = PasswordField('Old Password', validators=[DataRequired()])
-    password = PasswordField('New Password', validators=[
+    old_password = PasswordField('原密码', validators=[DataRequired()])
+    password = PasswordField('新密码', validators=[
         DataRequired(), Length(8, 128), EqualTo('password2')])
-    password2 = PasswordField('Confirm Password', validators=[DataRequired()])
-    submit = SubmitField()
+    password2 = PasswordField('确认密码', validators=[DataRequired()])
+    submit = SubmitField('提交')
 
 
 class NotificationSettingForm(FlaskForm):
@@ -70,9 +70,9 @@ class PrivacySettingForm(FlaskForm):
 
 
 class DeleteAccountForm(FlaskForm):
-    username = StringField('Username', validators=[DataRequired(), Length(1, 20)])
-    submit = SubmitField()
+    username = StringField('请输入用户名', validators=[DataRequired(), Length(1, 20)])
+    submit = SubmitField('提交')
 
     def validate_username(self, field):
         if field.data != current_user.username:
-            raise ValidationError('Wrong username.')
+            raise ValidationError('用户名错误.')

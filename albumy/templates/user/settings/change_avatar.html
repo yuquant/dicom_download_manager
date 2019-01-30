@@ -1,7 +1,7 @@
 {% extends 'user/settings/base.html' %}
 {% from 'bootstrap/form.html' import render_form %}
 
-{% block title %}Change Avatar{% endblock %}
+{% block title %}修改头像{% endblock %}
 
 {% block head %}
     {{ super() }}
@@ -10,11 +10,11 @@
 
 {% block setting_content %}
     <div class="card w-100 bg-light">
-        <h3 class="card-header">Change Avatar</h3>
+        <h3 class="card-header">修改头像</h3>
         <div class="card-body">
             {{ render_form(upload_form, action=url_for('.upload_avatar')) }}
             <small class="text-muted">
-                Your file's size must be less than 3 MB, the allowed formats are png and jpg.
+                文件大小小于 3 MB, 只支持png和jpg.
             </small>
         </div>
         <div class="card-body">

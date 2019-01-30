@@ -112,7 +112,7 @@ def edit_profile():
     form.name.data = current_user.name
     form.username.data = current_user.username
     form.bio.data = current_user.bio
-    form.website.data = current_user.website
+    # form.website.data = current_user.website
     form.location.data = current_user.location
     return render_template('user/settings/edit_profile.html', form=form)
 
