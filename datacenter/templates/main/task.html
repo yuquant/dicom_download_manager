@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% from 'bootstrap/form.html' import render_form %}
+{#{% from 'macros.html' import photo_card with context %}#}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+{% if current_user.is_authenticated %}
+    <div class="hello-form">
+        {{ render_form(form, action=request.full_path) }}
+    </div>
+{% else %}
+    <div class="jumbotron">
+        <div class="row">
+            <div class="col-md-8">
+                <img src="{{ url_for('static', filename='images/index.jpg') }}" class="rounded img-fluid">
+            </div>
+            <div class="col-md-4 align-self-center">
+                <h1>科研数据管理平台</h1>
+                <p>让科研更有趣更高效</p>
+                <p><a class="btn btn-primary btn-lg" href="{{ url_for('auth.register') }}">点击此处注册</a></p>
+            </div>
+        </div>
+    </div>
+{% endif %}
+{% endblock %}
+{% block scripts %}
+    {{ super() }}
+    {{ ckeditor.load(custom_url=url_for('static', filename='ckeditor/ckeditor.js')) }}
+    {#    {{ ckeditor.config(name='research_plan') }}#}
+    <script>
+        $(document).ready(function () {
+            $("#transport_to").change(function () {
+                if ($(this).children('option:selected').val() !== "0") {
+                    $("#folder_name").slideUp(1000);
+                    $("[for='folder_name']").hide()
+                } else {
+                    $("#folder_name").slideDown(1000);
+                    $("[for='folder_name']").show()
+                }
+            });
+            $("#researcher,#title").change(function () {
+                var date = moment(); //Get the current date
+                $("#folder_name").val(date.format("YYYYMMDDHHMMSS") + '-' + $("#title").val()+ '-' + $("#researcher").val())
+            })
+
+        })
+
+    </script>
+{% endblock %}

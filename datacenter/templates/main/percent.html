@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+{#{% from 'bootstrap/form.html' import render_form %}#}
+{% from 'bootstrap/pagination.html' import render_pagination %}
+{% block scripts %}
+    {{ super() }}
+
+    <script>
+        var last_percent = 0; // 全局变量,用于update页面刷新判断
+        function update() {
+            $.ajax({
+                url: "{{ url_for("main.bar") }}",
+                {#data: {id:{{ tasks[0].id }}},#}
+                type: 'GET',
+                async: true,
+                success: function (ret) {
+                    var percent = ret.percent
+                    var bar = $("#bar")
+                    bar.attr("style", "width: " + percent + "%");
+                    bar.width(percent + '%');
+                    console.log(ret.title);
+                    $('h5').html('<small>当前任务:</small><strong>'+ ret.title +'</strong>')
+                    {#$('h5').text("当前任务")#}
+
+                    console.log(percent);
+
+
+                    if (parseFloat(percent) < last_percent) {
+                            window.location.replace("{{ url_for('main.percent') }}")
+                    }
+                    last_percent = parseFloat(percent)
+                }
+            })
+        }
+
+
+        function to_top(obj) {
+            {#alert('置顶'+$(obj).attr('id'))#}
+            $.ajax({
+                url: "{{ url_for("main.to_top") }}",
+                data: {id: $(obj).attr('id')},
+                type: 'POST',
+                async: false,
+                success: function () {
+                    window.location.replace("{{ url_for('main.percent') }}")
+                }
+            })
+
+        }
+
+        function cancel(obj) {
+            {#alert('取消'+$(obj).attr('id'))#}
+            console.log('取消' + $(obj).attr('id'));
+            $.ajax({
+                url: "{{ url_for("main.cancel") }}",
+                data: {id: $(obj).attr('id')},
+                type: 'POST',
+                async: false,
+                success: function () {
+                    console.log('取消成功' + $(obj).attr('id'))
+                }
+            });
+            setTimeout(function () {
+                window.location.replace("{{ url_for('main.percent') }}")
+            }, 200);
+        }
+
+        // 进度条同步传输
+        $(document).ready(function () {
+            {#            {% if tasks | length %}#}
+            update();
+            var sitv = setInterval(
+                    'update()'
+                , 3000);
+            {#            {% endif %}#}
+            $('#myModal').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget); // Button that triggered the modal
+                var id = button.data('whatever'); // Extract info from data-* attributes
+
+                // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+                // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+                //var modal = $(this)
+                //modal.find('.modal-title').text('New message to ' + recipient)
+                //modal.find('.modal-body input').val(recipient)
+                $('#changeable').attr('id', id);
+            })
+
+        })
+    </script>
+
+{% endblock %}
+{% block content %}
+    {#    <h5>当前任务:{% if tasks | length %}{{ tasks[0].title }}{% endif %}</h5>#}
+    <h5><small>当前无任务</small></h5>
+    <div class="progress">
+
+        <div class="progress-bar" role="progressbar" aria-valuenow="60"
+             aria-valuemin="0" aria-valuemax="100" style="width: 0%; " id="bar">
+            <span class="sr-only">0% 完成</span>
+        </div>
+    </div>
+    <br>
+    <!-- 模态框（Modal） -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myModalLabel">
+                        确认
+                    </h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                        &times;
+                    </button>
+
+                </div>
+                <div class="modal-body">
+                    确定取消此任务？
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭
+                    </button>
+                    <button type="button" class="btn btn-primary" id='changeable' onclick="cancel(this)">
+                        确定
+                    </button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>
+    <br>
+    <div class="list">
+        <table class="table table-striped">
+            <thead>
+            <th>研究题目</th>
+            <th>研究者</th>
+            <th>数量</th>
+            <th>间隔</th>
+            <th>设备</th>
+            <th>提交时间</th>
+            </thead>
+            <tbody>
+            <meta charset="UTF-8">
+            {% for task in tasks %}
+                <tr class="mb-1">
+                    <td><a href="{{ url_for('main.show',uid=task.id) }}">{{ task.title }}</a></td>
+                    <td>{{ task.researcher }}</td>
+                    <td>{{ task.patients_count }}</td>
+                    <td>{{ task.time_wait }}</td>
+                    <td>{{ task.transport_to }}</td>
+                    <td>{{ task.timestamp.strftime('%Y-%m-%d') }}</td>
+                    <td><a href="" data-toggle="modal" data-target="#myModal"
+                           data-whatever={{ task.id }}>
+                        <small>取消</small>
+                    </a></td>
+                    <td class="to_top" id="{{ task.id }}" onclick="to_top(this)"><a href="">
+                        <small>置顶</small>
+                    </a></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {{ render_pagination(pagination) }}
+    </div>
+
+{% endblock %}
