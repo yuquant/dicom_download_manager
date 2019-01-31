@@ -8,9 +8,9 @@ import io
 
 from flask import url_for
 
-from albumy.models import User, Photo
-from albumy.settings import Operations
-from albumy.utils import generate_token
+from datacenter.models import User, Photo
+from datacenter.settings import Operations
+from datacenter.utils import generate_token
 from tests.base import BaseTestCase
 
 

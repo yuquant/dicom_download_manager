@@ -4,8 +4,8 @@ Author : Jason
 Github : https://github.com/yuquant
 Description :
 """
-from albumy.extensions import db
-from albumy.models import Comment, Role, User, Photo, Tag
+from datacenter.extensions import db
+from datacenter.models import Comment, Role, User, Photo, Tag
 from tests.base import BaseTestCase
 
 

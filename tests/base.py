@@ -8,9 +8,9 @@ import unittest
 
 from flask import url_for
 
-from albumy import create_app
-from albumy.extensions import db
-from albumy.models import User, Role, Photo, Comment, Tag
+from datacenter import create_app
+from datacenter.extensions import db
+from datacenter.models import User, Role, Photo, Comment, Tag
 
 
 class BaseTestCase(unittest.TestCase):

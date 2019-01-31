@@ -6,9 +6,9 @@ Description :
 """
 from flask import url_for
 
-from albumy.models import User
-from albumy.settings import Operations
-from albumy.utils import generate_token
+from datacenter.models import User
+from datacenter.settings import Operations
+from datacenter.utils import generate_token
 from tests.base import BaseTestCase
 
 

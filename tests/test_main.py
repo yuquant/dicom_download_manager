@@ -6,8 +6,8 @@ Description :
 """
 from flask import url_for
 
-from albumy.extensions import db
-from albumy.models import User, Photo, Comment, Notification, Tag
+from datacenter.extensions import db
+from datacenter.models import User, Photo, Comment, Notification, Tag
 from tests.base import BaseTestCase
 
 
