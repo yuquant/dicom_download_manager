@@ -26,6 +26,7 @@ avatars = Avatars()
 csrf = CSRFProtect()
 ckeditor = CKEditor()
 
+
 @login_manager.user_loader
 def load_user(user_id):
     from datacenter.models import User

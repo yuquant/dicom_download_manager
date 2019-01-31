@@ -7,7 +7,7 @@ Description :
 import os
 import time
 from flask import render_template, flash, redirect, url_for, current_app, \
-    send_from_directory, request, abort, Blueprint, jsonify
+    send_from_directory, request, abort, Blueprint, jsonify, g
 from flask_login import login_required, current_user
 from sqlalchemy.sql.expression import func
 
@@ -20,7 +20,9 @@ from datacenter.models import User, Photo, Tag, Follow, Collect, Comment, Notifi
 from datacenter.notifications import push_comment_notification, push_collect_notification
 from datacenter.utils import rename_image, resize_image, redirect_back, flash_errors, \
     random_filename
-
+# from datacenter import create_app
+# app = create_app()
+# app.app_context().push()
 main_bp = Blueprint('main', __name__)
 
 
@@ -156,7 +158,8 @@ def bar():
     # #     bar_percent = 0
     #
     ret = {'title': 'biaoti', 'percent': '20'}
-    # ret = app.config['bar']
+    # ret = app.config['BAR']
+    print(ret)
     return jsonify(ret)
 
 

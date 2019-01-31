@@ -27,7 +27,7 @@ def create_app(config_name=None):
         config_name = os.getenv('FLASK_CONFIG', 'development')
 
     app = Flask('datacenter')
-    
+
     app.config.from_object(config[config_name])
 
     register_extensions(app)
@@ -187,3 +187,4 @@ def register_commands(app):
         db.session.add_all(ae_obj)
         db.session.commit()
         click.echo('Initialized ae dict.')
+

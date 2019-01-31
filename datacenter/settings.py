@@ -71,6 +71,7 @@ class BaseConfig:
     UPLOAD_PATH = os.path.join(basedir, 'upload')
 
 
+
 class DevelopmentConfig(BaseConfig):
     SQLALCHEMY_DATABASE_URI = \
         prefix + os.path.join(basedir, 'data-dev.db')
