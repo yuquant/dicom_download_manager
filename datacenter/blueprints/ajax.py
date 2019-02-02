@@ -104,3 +104,26 @@ def unfollow(username):
 
     current_user.unfollow(user)
     return jsonify(message='Follow canceled.')
+
+
+@ajax_bp.route('/bar/', methods=['GET'])
+def bar():
+    """
+    传输进度
+    :return:
+    """
+    # # uid = request.form.get("id")
+    # task = Tasks.query.filter_by(active=True).order_by(Tasks.timestamp.desc()).first()
+    # # if task:
+    # #     # patients = Patients.query.filter_by(task_id=task.id).count()
+    # #     # patients_left = Patients.query.filter(and_(Patients.task_id == task.id, Patients.status != 0)).count()
+    # #     # bar_percent = patients_left / patients * 100
+    # #     title = task.title
+    # # else:
+    # #     title = ''
+    # #     bar_percent = 0
+    #
+    ret = {'title': 'biaoti', 'percent': '20'}
+    # ret = app.config['BAR']
+    # print(ret)
+    return jsonify(ret)

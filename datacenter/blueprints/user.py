@@ -15,7 +15,7 @@ from datacenter.forms.user import EditProfileForm, UploadAvatarForm, CropAvatarF
 from datacenter.models import User, Photo, Collect, Tasks
 from datacenter.notifications import push_follow_notification
 from datacenter.settings import Operations
-from datacenter.utils import generate_token, validate_token, redirect_back, flash_errors, with_dict
+from datacenter.utils import generate_token, validate_token, redirect_back, flash_errors
 
 user_bp = Blueprint('user', __name__)
 
@@ -29,12 +29,12 @@ def index(username):
     #     logout_user()
 
     page = request.args.get('page', 1, type=int)
-    pagination = Tasks.query.filter(Tasks.status == 0).order_by(Tasks.priority.desc()).order_by(
+    pagination = Tasks.query.filter(Tasks.status_id == 6).order_by(Tasks.priority.desc()).order_by(
         Tasks.timestamp).paginate(page,
                                   per_page=current_app.config['TASK_PER_PAGE'],
                                   )
-    tasks = with_dict(pagination)
-    return render_template('user/mytasks.html', user=user, pagination=pagination, tasks=tasks)
+    posts = pagination.items
+    return render_template('user/mytasks.html', user=user, pagination=pagination, tasks=posts)
 
 
 @user_bp.route('/<username>/finished')
@@ -46,12 +46,12 @@ def finished(username):
     #     logout_user()
 
     page = request.args.get('page', 1, type=int)
-    pagination = Tasks.query.filter(Tasks.status == 0).order_by(Tasks.priority.desc()).order_by(
+    pagination = Tasks.query.filter(Tasks.status_id == 6).order_by(Tasks.priority.desc()).order_by(
         Tasks.timestamp).paginate(page,
                                   per_page=current_app.config['TASK_PER_PAGE'],
                                   )
-    tasks = with_dict(pagination)
-    return render_template('user/mytasks.html', user=user, pagination=pagination, tasks=tasks)
+    posts = pagination.items
+    return render_template('user/mytasks.html', user=user, pagination=pagination, tasks=posts)
 
 
 @user_bp.route('/<username>/collections')

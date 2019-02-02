@@ -8,7 +8,7 @@
         var last_percent = 0; // 全局变量,用于update页面刷新判断
         function update() {
             $.ajax({
-                url: "{{ url_for("main.bar") }}",
+                url: "{{ url_for("ajax.bar") }}",
                 {#data: {id:{{ tasks[0].id }}},#}
                 type: 'GET',
                 async: true,
@@ -147,7 +147,7 @@
             {% for task in tasks %}
                 <tr class="mb-1">
                     <td><a href="{{ url_for('main.show',uid=task.id) }}">{{ task.title }}</a></td>
-                    <td>{{ task.researcher }}</td>
+                    <td>{{ task.researcher.name }}</td>
                     <td>{{ task.patients_count }}</td>
                     <td>{{ task.time_wait }}</td>
                     <td>{{ task.transport_to }}</td>

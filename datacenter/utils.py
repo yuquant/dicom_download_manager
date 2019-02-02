@@ -23,21 +23,6 @@ from datacenter.models import User,StatusDict, AEDict
 from datacenter.settings import Operations
 
 
-def with_dict(pagination):
-    """
-    分页显示的数据与字典表关联
-    :param pagination:
-    :return:
-    """
-    posts = pagination.items
-    for i, post in enumerate(posts):
-        # 状态数字转文字 TODO:也许可以通过外键关联
-        # posts[i].status = current_app.config['STATUS_DICT'][post.status]
-        # posts[i].transport_to = current_app.config['AE_DICT'][post.transport_to]
-        posts[i].status = StatusDict.query.filter_by(status_id=post.status).first().status_name
-        posts[i].transport_to = AEDict.query.filter_by(ae_id=post.transport_to).first().ae_name
-    return posts
-
 def random_filename(filename):
     ext = os.path.splitext(filename)[1]
     new_filename = uuid.uuid4().hex + ext

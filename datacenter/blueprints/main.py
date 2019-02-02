@@ -19,7 +19,7 @@ from datacenter.models import User, Photo, Tag, Follow, Collect, Comment, Notifi
     Tasks, StatusDict, AEDict, Patients
 from datacenter.notifications import push_comment_notification, push_collect_notification
 from datacenter.utils import rename_image, resize_image, redirect_back, flash_errors, \
-    random_filename, with_dict
+    random_filename
 
 # from datacenter import create_app
 # app = create_app()
@@ -63,7 +63,7 @@ def insert_form(form):
     patients_obj = []
     for patient in patients:
         patients_obj.append(Patients(accession_no=patient))
-    task = Tasks(**res, patients=patients_obj, patients_count=len(patients_obj))
+    task = Tasks(**res, patients=patients_obj, patients_count=len(patients_obj), researcher_id=current_user.id)
     db.session.add(task)
     db.session.add_all(patients_obj)
     db.session.commit()
@@ -120,13 +120,13 @@ def percent():
     :return:
     """
     page = request.args.get('page', 1, type=int)
-    pagination = Tasks.query.filter(Tasks.status == 0).order_by(Tasks.priority.desc()).order_by(
+    pagination = Tasks.query.filter(Tasks.status_id == 6).order_by(Tasks.priority.desc()).order_by(
         Tasks.timestamp).paginate(page,
                                   per_page=current_app.config['TASK_PER_PAGE'],
                                   # per_page=5,
                                   )
-    waiting_tasks = with_dict(pagination)
-
+    # waiting_tasks = with_dict(pagination)
+    waiting_tasks = pagination.items
     return render_template('main/percent.html', tasks=waiting_tasks, pagination=pagination)
 
 
@@ -134,29 +134,6 @@ def percent():
 def explore():
     photos = Photo.query.order_by(func.random()).limit(12)
     return render_template('main/explore.html', photos=photos)
-
-
-@main_bp.route('/bar/', methods=['GET'])
-def bar():
-    """
-    传输进度
-    :return:
-    """
-    # # uid = request.form.get("id")
-    # task = Tasks.query.filter_by(active=True).order_by(Tasks.timestamp.desc()).first()
-    # # if task:
-    # #     # patients = Patients.query.filter_by(task_id=task.id).count()
-    # #     # patients_left = Patients.query.filter(and_(Patients.task_id == task.id, Patients.status != 0)).count()
-    # #     # bar_percent = patients_left / patients * 100
-    # #     title = task.title
-    # # else:
-    # #     title = ''
-    # #     bar_percent = 0
-    #
-    ret = {'title': 'biaoti', 'percent': '20'}
-    # ret = app.config['BAR']
-    print(ret)
-    return jsonify(ret)
 
 
 @main_bp.route('/to-top/', methods=['POST'])
@@ -167,7 +144,7 @@ def to_top():
     :return:
     """
     uid = request.form.get("id")
-    current_priority_task = Tasks.query.filter(Tasks.status == 0).order_by(Tasks.priority.desc()).first_or_404()
+    current_priority_task = Tasks.query.filter(Tasks.status_id == 6).order_by(Tasks.priority.desc()).first_or_404()
     task = Tasks.query.filter_by(id=uid).first()
     task.priority = current_priority_task.priority + 1
     db.session.add(task)
@@ -208,12 +185,12 @@ def tasks():
     pagination = Tasks.query.order_by(Tasks.timestamp.desc()).paginate(page,
                                                                        per_page=current_app.config['TASK_PER_PAGE'])
     posts = pagination.items
-    for i, post in enumerate(posts):
-        posts[i].status = StatusDict.query.filter_by(status_id=post.status).first().status_name
-        posts[i].transport_to = AEDict.query.filter_by(ae_id=post.transport_to).first().ae_name
-        # posts[i].status = app.config['status_dict'][post.status]
-        # posts[i].transport_to = app.config['ae_dict'][post.transport_to]
-    print('render tasks')
+    # for i, post in enumerate(posts):
+    #     posts[i].status = StatusDict.query.filter_by(id=post.status).first().status_name
+    #     posts[i].transport_to = AEDict.query.filter_by(id=post.transport_to).first().ae_name
+    #     # posts[i].status = app.config['status_dict'][post.status]
+    #     # posts[i].transport_to = app.config['ae_dict'][post.transport_to]
+    # print('render tasks')
     return render_template('main/tasks.html', pagination=pagination, tasks=posts)
 
 
@@ -222,7 +199,7 @@ def status(uid):
     patients = Patients.query.filter_by(task_id=uid).all()
     for patient in patients:
         # patient.status = app.config['status_dict'][patient.status]
-        patient.status = StatusDict.query.filter_by(status_id=patient.status).first().status_name
+        patient.status = StatusDict.query.filter_by(id=patient.status).first().status_name
     return render_template('main/status.html', patients=patients)
 
 
@@ -247,9 +224,8 @@ def edit(uid):
             task = Tasks.query.get_or_404(uid)
             patients = task.patients
             form.title.data = task.title
-            form.researcher.data = task.researcher
             form.patients.data = '\r\n'.join([patient.accession_no for patient in patients])
-            form.transport_to.data = task.transport_to
+            form.transport_id.data = task.transport_id
             form.series.data = task.series
             form.time_wait.data = task.time_wait
             form.research_plan.data = task.research_plan

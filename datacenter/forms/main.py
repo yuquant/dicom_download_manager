@@ -38,7 +38,7 @@ class ResearchForm(FlaskForm):
     title = StringField('1.研究题目（*必填）', validators=[DataRequired(), Length(1, 50)])
     # researcher = StringField('2.研究者（*必填）', validators=[DataRequired(), Length(1, 20)])
     patients = TextAreaField('3.检查号列表(*必填)', validators=[DataRequired()])
-    transport_to = SelectField('4.DICOM图像传输（*必填）', coerce=int, choices='', validators=[InputRequired()])
+    transport_id = SelectField('4.DICOM图像传输（*必填）', coerce=int, choices='', validators=[InputRequired()])
     folder_name = StringField('&nbsp&nbsp下载后的文件夹命名（不修改则按照默认规则命名）',
                               validators=[Length(0, 50)])
     series = StringField('5.序列描述（多个可能的序列用逗号分隔开）')
@@ -50,4 +50,4 @@ class ResearchForm(FlaskForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.transport_to.choices = [(a.ae_id, a.ae_name) for a in AEDict.query.all()]
+        self.transport_id.choices = [(a.id, a.ae_name) for a in AEDict.query.all()]

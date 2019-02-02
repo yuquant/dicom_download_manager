@@ -10,7 +10,8 @@
         <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
         {% block styles %}
             <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
-            <link rel="stylesheet" href="{{ url_for('static', filename='open-iconic/font/css/open-iconic-bootstrap.css') }}">
+            <link rel="stylesheet"
+                  href="{{ url_for('static', filename='open-iconic/font/css/open-iconic-bootstrap.css') }}">
             <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
         {% endblock styles %}
     {% endblock head %}
@@ -30,60 +31,63 @@
 
             <div class="collapse navbar-collapse" id="navbarColor01">
                 <div class="navbar-nav mr-auto">
-{#                    {{ render_nav_item('main.index', '主页') }}#}
-{#                    {{ render_nav_item('main.explore', '探索') }}#}
+                    {#                    {{ render_nav_item('main.index', '主页') }}#}
+                    {#                    {{ render_nav_item('main.explore', '探索') }}#}
                     {{ render_nav_item('main.index', '任务添加') }}
                     {{ render_nav_item('main.percent', '任务进度') }}
                     {{ render_nav_item('main.tasks', '所有任务') }}
-{#                    <form class="form-inline my-2 my-lg-0" action="{{ url_for('main.search') }}">#}
-{#                        <input type="text" name="q" class="form-control mr-sm-1" placeholder="Photo, tag or user"#}
-{#                               required>#}
-{#                        <button class="btn btn-light my-2 my-sm-0" type="submit">#}
-{#                            <span class="oi oi-magnifying-glass"></span>#}
-{#                        </button>#}
-{#                    </form>#}
+                    {#                    <form class="form-inline my-2 my-lg-0" action="{{ url_for('main.search') }}">#}
+                    {#                        <input type="text" name="q" class="form-control mr-sm-1" placeholder="Photo, tag or user"#}
+                    {#                               required>#}
+                    {#                        <button class="btn btn-light my-2 my-sm-0" type="submit">#}
+                    {#                            <span class="oi oi-magnifying-glass"></span>#}
+                    {#                        </button>#}
+                    {#                    </form>#}
                 </div>
                 <div class="navbar-nav ml-auto">
-                {% if current_user.is_admin %}
-                    <a class="nav-item nav-link" href="{{ url_for('admin.manage_task', filter='unread') }}">
-                        <span class="oi oi-bell"></span>
-                        <span id="notification-badge"
-                              class="{% if notification_count == 0 %}hide{% endif %} badge badge-danger badge-notification"
-                              data-href="{{ url_for('ajax.notifications_count') }}">{{ notification_count }}</span>
-                    </a>
-{#                    <a class="nav-item nav-link" href="{{ url_for('main.upload') }}" title="Upload">#}
-{#                        <span class="oi oi-cloud-upload"></span>&nbsp;&nbsp;#}
-{#                    </a>#}
-                    <div class="dropdown nav-item">
-                        <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button"
-                           aria-expanded="false">
-                            <img class="avatar-xs"
-                                 src="{{ url_for('main.get_avatar', filename=current_user.avatar_s) }}">
-                            <span class="caret"></span>
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right" role="menu">
-                            <h6 class="dropdown-header">欢迎 {{ current_user.name }}</h6>
-                            <a class="dropdown-item" href="{{ url_for('user.index', username=current_user.username) }}">
-                                <span class="oi oi-person"></span> 我的任务
+                    {% if current_user.is_authenticated %}
+                        {% if current_user.is_admin %}
+                            <a class="nav-item nav-link" href="{{ url_for('admin.manage_task', filter='unread') }}">
+                                <span class="oi oi-bell"></span>
+                                <span id="notification-badge"
+                                      class="{% if notification_count == 0 %}hide{% endif %} badge badge-danger badge-notification"
+                                      data-href="{{ url_for('ajax.notifications_count') }}">{{ notification_count }}</span>
                             </a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="{{ url_for('user.edit_profile') }}">
-                                <span class="oi oi-cog"></span> 资料编辑
+                        {% endif %}
+                        {#                    <a class="nav-item nav-link" href="{{ url_for('main.upload') }}" title="Upload">#}
+                        {#                        <span class="oi oi-cloud-upload"></span>&nbsp;&nbsp;#}
+                        {#                    </a>#}
+                        <div class="dropdown nav-item">
+                            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button"
+                               aria-expanded="false">
+                                <img class="avatar-xs"
+                                     src="{{ url_for('main.get_avatar', filename=current_user.avatar_s) }}">
+                                <span class="caret"></span>
                             </a>
-                            {% if current_user.can('MODERATE') %}
-                                <a class="dropdown-item" href="{{ url_for('admin.manage_task') }}">
-                                    <span class="oi oi-dashboard"></span> 管理后台
+                            <div class="dropdown-menu dropdown-menu-right" role="menu">
+                                <h6 class="dropdown-header">欢迎 {{ current_user.name }}</h6>
+                                <a class="dropdown-item"
+                                   href="{{ url_for('user.index', username=current_user.username) }}">
+                                    <span class="oi oi-person"></span> 我的任务
                                 </a>
-                            {% endif %}
-                            <a class="dropdown-item" href="{{ url_for('auth.logout') }}">
-                                <span class="oi oi-power-standby"></span> 退出账户
-                            </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="{{ url_for('user.edit_profile') }}">
+                                    <span class="oi oi-cog"></span> 资料编辑
+                                </a>
+                                {% if current_user.can('MODERATE') %}
+                                    <a class="dropdown-item" href="{{ url_for('admin.manage_task') }}">
+                                        <span class="oi oi-dashboard"></span> 管理后台
+                                    </a>
+                                {% endif %}
+                                <a class="dropdown-item" href="{{ url_for('auth.logout') }}">
+                                    <span class="oi oi-power-standby"></span> 退出账户
+                                </a>
+                            </div>
                         </div>
-                    </div>
-                {% else %}
-                    <a class="btn btn-outline-primary" href="{{ url_for('auth.login') }}">登陆</a>&nbsp;&nbsp;
-                    <a class="btn btn-primary" href="{{ url_for('auth.register') }}">注册</a>
-                {% endif %}
+                    {% else %}
+                        <a class="btn btn-outline-primary" href="{{ url_for('auth.login') }}">登陆</a>&nbsp;&nbsp;
+                        <a class="btn btn-primary" href="{{ url_for('auth.register') }}">注册</a>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -101,16 +105,16 @@
         {% block content %}{% endblock %}
         {% block footer %}
             <footer class="text-center">
-{#                <p class="page-footer">#}
-                    <small>&copy; 2019
-{#                        <a href="http://greyli.com" title="Written by Grey Li">Grey Li</a> -#}
-{#                        <a href="https://github.com/greyli/albumy" title="Fork me on GitHub">GitHub</a> -#}
-                        <a href="" title="北京大学第一医院医学影像科">北京大学第一医院医学影像科</a>
-                    </small>
-{#                </p>#}
-{#                <p class="float-right">#}
-{#                    <small>数据管理平台</small>#}
-{#                </p>#}
+                {#                <p class="page-footer">#}
+                <small>&copy; 2019
+                    {#                        <a href="http://greyli.com" title="Written by Grey Li">Grey Li</a> -#}
+                    {#                        <a href="https://github.com/greyli/albumy" title="Fork me on GitHub">GitHub</a> -#}
+                    <a href="" title="北京大学第一医院医学影像科">北京大学第一医院医学影像科</a>
+                </small>
+                {#                </p>#}
+                {#                <p class="float-right">#}
+                {#                    <small>数据管理平台</small>#}
+                {#                </p>#}
             </footer>
         {% endblock %}
     </div>

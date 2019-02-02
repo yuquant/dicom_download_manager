@@ -42,7 +42,7 @@
             });
             $("#researcher,#title").change(function () {
                 var date = moment(); //Get the current date
-                $("#folder_name").val(date.format("YYYYMMDDHHMMSS") + '-' + $("#title").val()+ '-' + '{{ current_user.name }}')
+                $("#folder_name").val(date.format("YYYYMMDDHHMMSS") + '-' + $("#title").val()+ '-' + '{{ current_user.username }}')
             })
 
         })

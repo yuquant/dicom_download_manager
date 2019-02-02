@@ -17,7 +17,7 @@ class EditProfileForm(FlaskForm):
     name = StringField('姓名', validators=[DataRequired(), Length(1, 30)])
     username = StringField('用户名', validators=[DataRequired(), Length(1, 20),
                                                    Regexp('^[a-zA-Z0-9]*$',
-                                                          message='The username should contain only a-z, A-Z and 0-9.')])
+                                                          message='用户名只能包含 a-z, A-Z 和 0-9.')])
     # website = StringField('Website', validators=[Optional(), Length(0, 255)])
     location = StringField('学号', validators=[Optional(), Length(0, 50)])
     bio = TextAreaField('简介', validators=[Optional(), Length(0, 120)])

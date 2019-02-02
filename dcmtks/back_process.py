@@ -29,7 +29,7 @@ def back_server():
 
     while True:
         app.config['BAR'] = {'title': '', 'percent': '0'}
-        task = Tasks.query.filter(Tasks.status == 0).order_by(Tasks.priority.desc()).order_by(
+        task = Tasks.query.filter(Tasks.status_id == 6).order_by(Tasks.priority.desc()).order_by(
             Tasks.timestamp).first()
         # 查询任务状态为待处理的优先级最高,同一优先级按时间排序
         if task:
@@ -39,8 +39,8 @@ def back_server():
                 # db.session.add(task)
                 db.session.commit()
                 # patients = task.patients
-                patients = Patients.query.filter(and_(Patients.task_id == task.id, Patients.status == 0)).all()
-                transport_to = AEDict.query.filter_by(ae_id=task.transport_to).first_or_404().ae_title
+                patients = Patients.query.filter(and_(Patients.task_id == task.id, Patients.status_id == 0)).all()
+                transport_to = AEDict.query.filter_by(id=task.transport_to).first_or_404().ae_title
                 if not task.series:
                     series_desc = None
                 else:

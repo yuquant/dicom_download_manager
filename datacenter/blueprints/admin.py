@@ -11,7 +11,7 @@ from datacenter.decorators import admin_required, permission_required
 from datacenter.extensions import db
 from datacenter.forms.admin import EditProfileAdminForm
 from datacenter.models import Role, User, Tag, Photo, Comment, Tasks
-from datacenter.utils import redirect_back, with_dict
+from datacenter.utils import redirect_back
 
 admin_bp = Blueprint('admin', __name__)
 
@@ -179,12 +179,13 @@ def manage_tag():
 @permission_required('MODERATE')
 def manage_task():
     page = request.args.get('page', 1, type=int)
-    pagination = Tasks.query.filter(Tasks.status == 0).order_by(Tasks.priority.desc()).order_by(
+    pagination = Tasks.query.filter(Tasks.status_id == 6).order_by(Tasks.priority.desc()).order_by(
         Tasks.timestamp).paginate(page,
                                   per_page=current_app.config['TASK_PER_PAGE'],
                                   )
-    waiting_tasks = with_dict(pagination)
-    return render_template('admin/manage_task.html', pagination=pagination, tasks=waiting_tasks)
+    # waiting_tasks = with_dict(pagination)
+    tasks = pagination.items
+    return render_template('admin/manage_task.html', pagination=pagination, tasks=tasks)
 
 
 @admin_bp.route('/manage/comment', defaults={'order': 'by_flag'})

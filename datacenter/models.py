@@ -117,12 +117,16 @@ class User(db.Model, UserMixin):
                                 lazy='dynamic', cascade='all')
     followers = db.relationship('Follow', foreign_keys=[Follow.followed_id], back_populates='followed',
                                 lazy='dynamic', cascade='all')
+    tasks = db.relationship('Tasks')
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
         self.generate_avatar()
         self.follow(self)  # follow self
         self.set_role()
+
+    def __str__(self):
+        return self.name
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -298,8 +302,8 @@ def delete_photos(**kwargs):
 class Tasks(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(50), index=True)
-    researcher = db.Column(db.String(20))
-    transport_to = db.Column(db.Integer)
+    transport_id = db.Column(db.Integer, db.ForeignKey('ae_dict.id'))
+    transport_to = db.relationship('AEDict')
     series = db.Column(db.String(100))
     time_wait = db.Column(db.Float, default=5)
     research_plan = db.Column(db.Text)
@@ -307,33 +311,44 @@ class Tasks(db.Model):
     folder_name = db.Column(db.String(100))
     anonymous = db.Column(db.Integer, default=0)
     patients_count = db.Column(db.Integer, default=0)
-    status = db.Column(db.Integer, default=0)
+    status_id = db.Column(db.Integer, db.ForeignKey('status_dict.id'), default=6)
+    status = db.relationship('StatusDict')
     priority = db.Column(db.Integer, default=0)
     timestamp = db.Column(db.DateTime, default=datetime.now, index=True)
     patients = db.relationship('Patients')  # collection
     active = db.Column(db.Boolean, default=False)
-
-
-class Patients(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    accession_no = db.Column(db.String(20))
-    status = db.Column(db.Integer, default=0)
-    err_message = db.Column(db.String(70), default='')
-    task_id = db.Column(db.Integer, db.ForeignKey('tasks.id'))
-    # blank = db.Column(db.String(20))
-
-    # def __repr__(self):
-    #     return '<Patient %r>' % self.accession_no
+    # relationship用于反向引用  db.ForeignKey('user.id') user为表名,
+    researcher_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    researcher = db.relationship('User', back_populates='tasks')
 
 
 class StatusDict(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     status_name = db.Column(db.String(20), unique=True)
-    status_id = db.Column(db.Integer, unique=True)
+    # status_id = db.Column(db.Integer, unique=True)
+
+    def __repr__(self):
+        return self.status_name
+
+
+class Patients(db.Model):
+    # __tablename__ = 'patients'
+    id = db.Column(db.Integer, primary_key=True)
+    accession_no = db.Column(db.String(20))
+    err_message = db.Column(db.String(70), default='')
+    task_id = db.Column(db.Integer, db.ForeignKey('tasks.id'))
+    # status_id = db.Column(db.Integer, default=0)
+    status_id = db.Column(db.Integer, db.ForeignKey('status_dict.id'), default=6)
+    status = db.relationship('StatusDict')
+
+    # def __repr__(self):
+    #     return '<Patient %r>' % self.accession_no
 
 
 class AEDict(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     ae_title = db.Column(db.String(20), unique=True)
     ae_name = db.Column(db.String(20), unique=True)
-    ae_id = db.Column(db.Integer, unique=True)
+
+    def __str__(self):
+        return self.ae_name

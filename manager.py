@@ -6,6 +6,10 @@ Description :
 python manager.py db init
 python manager.py db migrate
 python manager.py db upgrade
+
+set FLASK_APP=datacenter
+flask initdict
+flask initaedict
 """
 from flask_script import Manager
 from run import app

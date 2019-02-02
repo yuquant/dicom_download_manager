@@ -165,10 +165,10 @@ def register_commands(app):
     def initdict():
         """初始化状态字典"""
         # StatusDict.__table__.drop()
-        status_dict = {0: '待处理', 1: '完成', 2: '取消', 3: '失败', 4: '部分完成', 5: '未知错误'}
+        status_dict = {1: '完成', 2: '取消', 3: '失败', 4: '部分完成', 5: '未知错误', 6: '待审批', 7: '队列中'}
         status_obj = []
         for key, val in status_dict.items():
-            status_obj.append(StatusDict(status_id=key, status_name=val))
+            status_obj.append(StatusDict(status_name=val))
         db.session.add_all(status_obj)
         db.session.commit()
         click.echo('Initialized status dict.')
@@ -177,13 +177,13 @@ def register_commands(app):
     def initaedict():
         """初始化AE列表"""
         ae_list = [
-            ['DOWNLOAD', '下载', 0],
-            ['SMIT_Q', '新网PACS', 1],
-            ['ISDPHILIPS', '飞利浦ISD', 2]
+            ['DOWNLOAD', '下载', 1],
+            ['SMIT_Q', '新网PACS', 2],
+            ['ISDPHILIPS', '飞利浦ISD', 3]
                    ]
         ae_obj = []
         for ae_title, ae_name, ae_id in ae_list:
-            ae_obj.append(AEDict(ae_title=ae_title, ae_name=ae_name, ae_id=ae_id))
+            ae_obj.append(AEDict(ae_title=ae_title, ae_name=ae_name))
         db.session.add_all(ae_obj)
         db.session.commit()
         click.echo('Initialized ae dict.')
