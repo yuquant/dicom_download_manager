@@ -36,7 +36,7 @@ class CommentForm(FlaskForm):
 
 class ResearchForm(FlaskForm):
     title = StringField('1.研究题目（*必填）', validators=[DataRequired(), Length(1, 50)])
-    researcher = StringField('2.研究者（*必填）', validators=[DataRequired(), Length(1, 20)])
+    # researcher = StringField('2.研究者（*必填）', validators=[DataRequired(), Length(1, 20)])
     patients = TextAreaField('3.检查号列表(*必填)', validators=[DataRequired()])
     transport_to = SelectField('4.DICOM图像传输（*必填）', coerce=int, choices='', validators=[InputRequired()])
     folder_name = StringField('&nbsp&nbsp下载后的文件夹命名（不修改则按照默认规则命名）',

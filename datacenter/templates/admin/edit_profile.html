@@ -5,13 +5,13 @@
 {% block title %}资料编辑{% endblock %}
 
 {% block content %}
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            {{ render_breadcrumb_item('admin.index', '后台主页') }}
-            {{ render_breadcrumb_item('admin.manage_user', '用户管理') }}
-            {{ render_breadcrumb_item('admin.edit_profile_admin', '资料编辑') }}
-        </ol>
-    </nav>
+{#    <nav aria-label="breadcrumb">#}
+{#        <ol class="breadcrumb">#}
+{#            {{ render_breadcrumb_item('admin.index', '后台主页') }}#}
+{#            {{ render_breadcrumb_item('admin.manage_user', '用户管理') }}#}
+{#            {{ render_breadcrumb_item('admin.edit_profile_admin', '资料编辑') }}#}
+{#        </ol>#}
+{#    </nav>#}
     <div class="page-header">
         <h1>资料编辑
             <a class="float-right btn btn-light" href="{{ url_for('user.index', username=user.username) }}">切换到用户主页</a>

@@ -18,14 +18,14 @@
                     bar.attr("style", "width: " + percent + "%");
                     bar.width(percent + '%');
                     console.log(ret.title);
-                    $('h5').html('<small>当前任务:</small><strong>'+ ret.title +'</strong>')
+                    $('h5').html('<small>当前任务:</small><strong>' + ret.title + '</strong>')
                     {#$('h5').text("当前任务")#}
 
                     console.log(percent);
 
 
                     if (parseFloat(percent) < last_percent) {
-                            window.location.replace("{{ url_for('main.percent') }}")
+                        window.location.replace("{{ url_for('main.percent') }}")
                     }
                     last_percent = parseFloat(percent)
                 }
@@ -69,7 +69,7 @@
             {#            {% if tasks | length %}#}
             update();
             var sitv = setInterval(
-                    'update()'
+                'update()'
                 , 3000);
             {#            {% endif %}#}
             $('#myModal').on('show.bs.modal', function (event) {
@@ -90,7 +90,9 @@
 {% endblock %}
 {% block content %}
     {#    <h5>当前任务:{% if tasks | length %}{{ tasks[0].title }}{% endif %}</h5>#}
-    <h5><small>当前无任务</small></h5>
+    <h5>
+        <small>当前无任务</small>
+    </h5>
     <div class="progress">
 
         <div class="progress-bar" role="progressbar" aria-valuenow="60"
@@ -126,6 +128,7 @@
         </div><!-- /.modal -->
     </div>
     <br>
+
     <div class="list">
         <table class="table table-striped">
             <thead>
@@ -135,6 +138,9 @@
             <th>间隔</th>
             <th>设备</th>
             <th>提交时间</th>
+            {% if current_user.is_admin %}
+                <th>操作</th>
+            {% endif %}
             </thead>
             <tbody>
             <meta charset="UTF-8">
@@ -146,18 +152,30 @@
                     <td>{{ task.time_wait }}</td>
                     <td>{{ task.transport_to }}</td>
                     <td>{{ task.timestamp.strftime('%Y-%m-%d') }}</td>
-                    <td><a href="" data-toggle="modal" data-target="#myModal"
-                           data-whatever={{ task.id }}>
-                        <small>取消</small>
-                    </a></td>
-                    <td class="to_top" id="{{ task.id }}" onclick="to_top(this)"><a href="">
-                        <small>置顶</small>
-                    </a></td>
+                    {% if current_user.is_admin %}
+                        <td>
+                            <form class="inline" action="{{ url_for('admin.delete_tag', tag_id=task.id) }}"
+                                  method="post">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <input type="submit"
+                                       class="btn btn-primary btn-sm" value="置顶">
+                            </form>
+                            <form class="inline" action="{{ url_for('admin.delete_tag', tag_id=task.id) }}"
+                                  method="post">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <input type="submit" onclick="return confirm('确定取消此任务?');"
+                                       class="btn btn-danger btn-sm" value="取消">
+                            </form>
+                        </td>
+
+                    {% endif %}
                 </tr>
             {% endfor %}
             </tbody>
         </table>
+    {% if tasks %}
         {{ render_pagination(pagination) }}
+    {% endif %}
     </div>
 
 {% endblock %}

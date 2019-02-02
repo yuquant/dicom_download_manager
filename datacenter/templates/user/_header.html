@@ -6,7 +6,7 @@
     <div class="col-md-3">
         <a href="{% if current_user == user %}{{ url_for('.change_avatar') }}{% else %}#{% endif %}"
            title="Change avatar">
-            <img class="img-fluid rounded" src="{{ url_for('main.get_avatar', filename=user.avatar_l) }}">
+            <img class="img-fluid rounded" src="{{ url_for('main.get_avatar', filename=user.avatar_m) }}">
         </a>
     </div>
     <div class="col-md-9">
@@ -61,20 +61,20 @@
                     <a class="btn btn-warning btn-sm" href="{{ url_for('admin.edit_profile_admin', user_id=user.id) }}">编辑资料</a>
                 {% endif %}
             {% endif %}
-            <div class="float-right">
-                {{ follow_area(user) }}
-                {% if current_user.is_authenticated and user == current_user %}
-                    <a class="btn btn-outline-primary btn-sm" href="{{ url_for('.edit_profile') }}">Edit profile</a>
-                {% endif %}
-            </div>
+{#            <div class="float-right">#}
+{#                {{ follow_area(user) }}#}
+{#                {% if current_user.is_authenticated and user == current_user %}#}
+{#                    <a class="btn btn-outline-primary btn-sm" href="{{ url_for('.edit_profile') }}">编辑资料</a>#}
+{#                {% endif %}#}
+{#            </div>#}
         </div>
     </div>
 </div>
 <div class="user-nav">
     <ul class="nav nav-tabs">
-        {{ render_nav_item('user.index', 'Photo', user.photos|length, username=user.username) }}
-        {{ render_nav_item('user.show_collections', 'Collections', user.collections|length, username=user.username) }}
-        {{ render_nav_item('user.show_following', 'Following', user.following.count() - 1, username=user.username) }}
-        {{ render_nav_item('user.show_followers', 'Follower', user.followers.count() - 1, username=user.username) }}
+        {{ render_nav_item('user.index', '未完成', user.photos|length, username=user.username) }}
+        {{ render_nav_item('user.finished', '已完成', user.collections|length, username=user.username) }}
+{#        {{ render_nav_item('user.show_following', 'Following', user.following.count() - 1, username=user.username) }}#}
+{#        {{ render_nav_item('user.show_followers', 'Follower', user.followers.count() - 1, username=user.username) }}#}
     </ul>
 </div>

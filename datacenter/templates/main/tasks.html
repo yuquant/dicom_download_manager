@@ -31,5 +31,7 @@
         {% endfor %}
         </tbody>
     </table>
+    {% if tasks %}
     {{ render_pagination(pagination) }}
+    {% endif %}
 {% endblock %}

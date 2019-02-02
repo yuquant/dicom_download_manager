@@ -15,7 +15,7 @@ from datacenter.models import User, Role
 class EditProfileAdminForm(EditProfileForm):
     email = StringField('邮箱', validators=[DataRequired(), Length(1, 254), Email()])
     role = SelectField('角色', coerce=int)
-    active = BooleanField('激活')
+    # active = BooleanField('激活')
     # confirmed = BooleanField('Confirmed')
     submit = SubmitField()
 

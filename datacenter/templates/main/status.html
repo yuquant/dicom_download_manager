@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{#{% from 'bootstrap/form.html' import render_form %}#}
+{% from 'bootstrap/pagination.html' import render_pagination %}
+{% block content %}
+    {#   {% include "_tasklist.html" %}#}
+    <table class="table table-striped">
+        <thead>
+        <th>检查列表</th>
+        <th>下载状态</th>
+        <th>备注</th>
+
+        </thead>
+        <tbody>
+        <meta charset="UTF-8">
+        {% for patient in patients %}
+            <tr class="mb-1">
+                <td>{{ patient.accession_no }}</td>
+                <td>{{ patient.status }}</td>
+                <td>{{ patient.err_message }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}

@@ -6,7 +6,7 @@
 {% block navbar %}
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
-            <a class="navbar-brand" href="{{ url_for('admin.index') }}">
+            <a class="navbar-brand" href="{{ url_for('admin.manage_task') }}">
                 <img src="{{ url_for('static', filename='favicon.ico') }}" alt="Albumy"> 管理后台
             </a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01"
@@ -24,7 +24,7 @@
                         <div class="dropdown-menu dropdown-menu-right" role="menu">
 {#                            <a class="dropdown-item" href="{{ url_for('admin.manage_photo') }}">Photos</a>#}
                             <a class="dropdown-item" href="{{ url_for('admin.manage_user') }}">用户</a>
-                            <a class="dropdown-item" href="{{ url_for('admin.manage_tag') }}">任务</a>
+                            <a class="dropdown-item" href="{{ url_for('admin.manage_task') }}">任务</a>
 {#                            <a class="dropdown-item" href="{{ url_for('admin.manage_comment') }}">Comments</a>#}
                         </div>
                     </div>
@@ -58,7 +58,7 @@
 {% block content %}
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-            {{ render_breadcrumb_item('admin.index', '后台主页') }}
+            {{ render_breadcrumb_item('admin.manage_task', '后台主页') }}
         </ol>
     </nav>
     <div class="row">

@@ -30,9 +30,9 @@
 
             <div class="collapse navbar-collapse" id="navbarColor01">
                 <div class="navbar-nav mr-auto">
-                    {{ render_nav_item('main.index', '主页') }}
-                    {{ render_nav_item('main.explore', '探索') }}
-                    {{ render_nav_item('main.task', '任务添加') }}
+{#                    {{ render_nav_item('main.index', '主页') }}#}
+{#                    {{ render_nav_item('main.explore', '探索') }}#}
+                    {{ render_nav_item('main.index', '任务添加') }}
                     {{ render_nav_item('main.percent', '任务进度') }}
                     {{ render_nav_item('main.tasks', '所有任务') }}
 {#                    <form class="form-inline my-2 my-lg-0" action="{{ url_for('main.search') }}">#}
@@ -44,13 +44,13 @@
 {#                    </form>#}
                 </div>
                 <div class="navbar-nav ml-auto">
-                {% if current_user.is_authenticated %}
-{#                    <a class="nav-item nav-link" href="{{ url_for('main.show_notifications', filter='unread') }}">#}
-{#                        <span class="oi oi-bell"></span>#}
-{#                        <span id="notification-badge"#}
-{#                              class="{% if notification_count == 0 %}hide{% endif %} badge badge-danger badge-notification"#}
-{#                              data-href="{{ url_for('ajax.notifications_count') }}">{{ notification_count }}</span>#}
-{#                    </a>#}
+                {% if current_user.is_admin %}
+                    <a class="nav-item nav-link" href="{{ url_for('admin.manage_task', filter='unread') }}">
+                        <span class="oi oi-bell"></span>
+                        <span id="notification-badge"
+                              class="{% if notification_count == 0 %}hide{% endif %} badge badge-danger badge-notification"
+                              data-href="{{ url_for('ajax.notifications_count') }}">{{ notification_count }}</span>
+                    </a>
 {#                    <a class="nav-item nav-link" href="{{ url_for('main.upload') }}" title="Upload">#}
 {#                        <span class="oi oi-cloud-upload"></span>&nbsp;&nbsp;#}
 {#                    </a>#}
@@ -71,7 +71,7 @@
                                 <span class="oi oi-cog"></span> 资料编辑
                             </a>
                             {% if current_user.can('MODERATE') %}
-                                <a class="dropdown-item" href="{{ url_for('admin.index') }}">
+                                <a class="dropdown-item" href="{{ url_for('admin.manage_task') }}">
                                     <span class="oi oi-dashboard"></span> 管理后台
                                 </a>
                             {% endif %}
@@ -100,14 +100,14 @@
         {% endfor %}
         {% block content %}{% endblock %}
         {% block footer %}
-            <footer>
-                <p class="float-left">
+            <footer class="text-center">
+{#                <p class="page-footer">#}
                     <small>&copy; 2019
 {#                        <a href="http://greyli.com" title="Written by Grey Li">Grey Li</a> -#}
 {#                        <a href="https://github.com/greyli/albumy" title="Fork me on GitHub">GitHub</a> -#}
                         <a href="" title="北京大学第一医院医学影像科">北京大学第一医院医学影像科</a>
                     </small>
-                </p>
+{#                </p>#}
 {#                <p class="float-right">#}
 {#                    <small>数据管理平台</small>#}
 {#                </p>#}

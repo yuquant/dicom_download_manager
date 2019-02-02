@@ -10,28 +10,28 @@ from flask_login import login_required
 from datacenter.decorators import admin_required, permission_required
 from datacenter.extensions import db
 from datacenter.forms.admin import EditProfileAdminForm
-from datacenter.models import Role, User, Tag, Photo, Comment
-from datacenter.utils import redirect_back
+from datacenter.models import Role, User, Tag, Photo, Comment, Tasks
+from datacenter.utils import redirect_back, with_dict
 
 admin_bp = Blueprint('admin', __name__)
 
 
-@admin_bp.route('/')
-@login_required
-@permission_required('MODERATE')
-def index():
-    user_count = User.query.count()
-    locked_user_count = User.query.filter_by(locked=True).count()
-    blocked_user_count = User.query.filter_by(active=False).count()
-    photo_count = Photo.query.count()
-    reported_photos_count = Photo.query.filter(Photo.flag > 0).count()
-    tag_count = Tag.query.count()
-    comment_count = Comment.query.count()
-    reported_comments_count = Comment.query.filter(Comment.flag > 0).count()
-    return render_template('admin/index.html', user_count=user_count, photo_count=photo_count,
-                           tag_count=tag_count, comment_count=comment_count, locked_user_count=locked_user_count,
-                           blocked_user_count=blocked_user_count, reported_comments_count=reported_comments_count,
-                           reported_photos_count=reported_photos_count)
+# @admin_bp.route('/')
+# @login_required
+# @permission_required('MODERATE')
+# def index():
+#     user_count = User.query.count()
+#     locked_user_count = User.query.filter_by(locked=True).count()
+#     blocked_user_count = User.query.filter_by(active=False).count()
+#     photo_count = Photo.query.count()
+#     reported_photos_count = Photo.query.filter(Photo.flag > 0).count()
+#     tag_count = Tag.query.count()
+#     comment_count = Comment.query.count()
+#     reported_comments_count = Comment.query.filter(Comment.flag > 0).count()
+#     return render_template('admin/index.html', user_count=user_count, photo_count=photo_count,
+#                            tag_count=tag_count, comment_count=comment_count, locked_user_count=locked_user_count,
+#                            blocked_user_count=blocked_user_count, reported_comments_count=reported_comments_count,
+#                            reported_photos_count=reported_photos_count)
 
 
 @admin_bp.route('/profile/<int:user_id>', methods=['GET', 'POST'])
@@ -59,12 +59,12 @@ def edit_profile_admin(user_id):
     form.name.data = user.name
     form.role.data = user.role_id
     form.bio.data = user.bio
-    form.website.data = user.website
+    # form.website.data = user.website
     form.location.data = user.location
     form.username.data = user.username
     form.email.data = user.email
-    form.confirmed.data = user.confirmed
-    form.active.data = user.active
+    # form.confirmed.data = user.confirmed
+    # form.active.data = user.active
     return render_template('admin/edit_profile.html', form=form, user=user)
 
 
@@ -171,6 +171,20 @@ def manage_tag():
     pagination = Tag.query.order_by(Tag.id.desc()).paginate(page, per_page)
     tags = pagination.items
     return render_template('admin/manage_tag.html', pagination=pagination, tags=tags)
+
+
+@admin_bp.route('/')
+@admin_bp.route('/manage/task')
+@login_required
+@permission_required('MODERATE')
+def manage_task():
+    page = request.args.get('page', 1, type=int)
+    pagination = Tasks.query.filter(Tasks.status == 0).order_by(Tasks.priority.desc()).order_by(
+        Tasks.timestamp).paginate(page,
+                                  per_page=current_app.config['TASK_PER_PAGE'],
+                                  )
+    waiting_tasks = with_dict(pagination)
+    return render_template('admin/manage_task.html', pagination=pagination, tasks=waiting_tasks)
 
 
 @admin_bp.route('/manage/comment', defaults={'order': 'by_flag'})

@@ -98,7 +98,7 @@ class User(db.Model, UserMixin):
     avatar_raw = db.Column(db.String(64))
 
     confirmed = db.Column(db.Boolean, default=False)
-    locked = db.Column(db.Boolean, default=False)
+    locked = db.Column(db.Boolean, default=True)
     active = db.Column(db.Boolean, default=True)
 
     public_collections = db.Column(db.Boolean, default=True)

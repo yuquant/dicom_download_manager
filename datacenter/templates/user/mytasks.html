@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% from 'bootstrap/pagination.html' import render_pagination %}
+{% from 'macros.html' import photo_card %}
+
+{% block title %}{{ user.name }}{% endblock %}
+
+{% block content %}
+    {% include 'user/_header.html' %}
+    <div class="list">
+        <table class="table table-striped">
+            <thead>
+            <th>研究题目</th>
+            <th>数量</th>
+            <th>间隔</th>
+            <th>设备</th>
+            <th>提交时间</th>
+            {% if current_user.is_login %}
+                <th>操作</th>
+            {% endif %}
+            </thead>
+            <tbody>
+            <meta charset="UTF-8">
+            {% for task in tasks %}
+                <tr class="mb-1">
+                    <td><a href="{{ url_for('main.show',uid=task.id) }}">{{ task.title }}</a></td>
+{#                    <td>{{ task.researcher }}</td>#}
+                    <td>{{ task.patients_count }}</td>
+                    <td>{{ task.time_wait }}</td>
+                    <td>{{ task.transport_to }}</td>
+                    <td>{{ task.timestamp.strftime('%Y-%m-%d') }}</td>
+                    {% if current_user.is_login %}
+                        <td>
+                            <form class="inline" action="{{ url_for('admin.delete_tag', tag_id=task.id) }}"
+                                  method="post">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <input type="submit"
+                                       class="btn btn-primary btn-sm" value="置顶">
+                            </form>
+                            <form class="inline" action="{{ url_for('admin.delete_tag', tag_id=task.id) }}"
+                                  method="post">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <input type="submit" onclick="return confirm('确定取消此任务?');"
+                                       class="btn btn-danger btn-sm" value="取消">
+                            </form>
+                        </td>
+
+                    {% endif %}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+{#        {{ render_pagination(pagination) }}#}
+    </div>
+    {% if tasks %}
+{#        <div class="page-footer">#}
+            {{ render_pagination(pagination, align='left') }}
+{#        </div>#}
+    {% endif %}
+{% endblock %}

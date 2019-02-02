@@ -7,39 +7,24 @@ Description :
 import os
 import time
 from flask import render_template, flash, redirect, url_for, current_app, \
-    send_from_directory, request, abort, Blueprint, jsonify, g
-from flask_login import login_required, current_user
+    send_from_directory, request, abort, Blueprint, jsonify
+from flask_login import login_required, current_user, logout_user
 from sqlalchemy.sql.expression import func
 
 from datacenter.decorators import confirm_required, permission_required
 from datacenter.extensions import db
 from datacenter.forms.main import DescriptionForm, TagForm, CommentForm, \
     ResearchForm
-from datacenter.models import User, Photo, Tag, Follow, Collect, Comment, Notification,\
+from datacenter.models import User, Photo, Tag, Follow, Collect, Comment, Notification, \
     Tasks, StatusDict, AEDict, Patients
 from datacenter.notifications import push_comment_notification, push_collect_notification
 from datacenter.utils import rename_image, resize_image, redirect_back, flash_errors, \
-    random_filename
+    random_filename, with_dict
+
 # from datacenter import create_app
 # app = create_app()
 # app.app_context().push()
 main_bp = Blueprint('main', __name__)
-
-
-def with_dict(pagination):
-    """
-    分页显示的数据与字典表关联
-    :param pagination:
-    :return:
-    """
-    posts = pagination.items
-    for i, post in enumerate(posts):
-        # 状态数字转文字 TODO:也许可以通过外键关联
-        # posts[i].status = current_app.config['STATUS_DICT'][post.status]
-        # posts[i].transport_to = current_app.config['AE_DICT'][post.transport_to]
-        posts[i].status = StatusDict.query.filter_by(status_id=post.status).first().status_name
-        posts[i].transport_to = AEDict.query.filter_by(ae_id=post.transport_to).first().ae_name
-    return posts
 
 
 def insert_form(form):
@@ -84,40 +69,51 @@ def insert_form(form):
     db.session.commit()
 
 
-@main_bp.route('/')
-def index():
-    if current_user.is_authenticated:
-        page = request.args.get('page', 1, type=int)
-        per_page = current_app.config['ALBUMY_PHOTO_PER_PAGE']
-        pagination = Photo.query \
-            .join(Follow, Follow.followed_id == Photo.author_id) \
-            .filter(Follow.follower_id == current_user.id) \
-            .order_by(Photo.timestamp.desc()) \
-            .paginate(page, per_page)
-        photos = pagination.items
-    else:
-        pagination = None
-        photos = None
-    tags = Tag.query.join(Tag.photos).group_by(Tag.id).order_by(func.count(Photo.id).desc()).limit(10)
-    return render_template('main/index.html', pagination=pagination, photos=photos, tags=tags, Collect=Collect)
+# @main_bp.route('/')
+# def index():
+#     if current_user.is_authenticated:
+#         page = request.args.get('page', 1, type=int)
+#         per_page = current_app.config['ALBUMY_PHOTO_PER_PAGE']
+#         pagination = Photo.query \
+#             .join(Follow, Follow.followed_id == Photo.author_id) \
+#             .filter(Follow.follower_id == current_user.id) \
+#             .order_by(Photo.timestamp.desc()) \
+#             .paginate(page, per_page)
+#         photos = pagination.items
+#     else:
+#         pagination = None
+#         photos = None
+#     tags = Tag.query.join(Tag.photos).group_by(Tag.id).order_by(func.count(Photo.id).desc()).limit(10)
+#     return render_template('main/index.html', pagination=pagination, photos=photos, tags=tags, Collect=Collect)
 
 
 @main_bp.route('/task/', methods=['GET', 'POST'])
-def task():
+def index():
     """
     任务提交页面
     """
-    form = ResearchForm()
-    if form.validate_on_submit():
-        # title = form.title.data
-        # researcher = form.researcher.data
-        insert_form(form)
-        # flash('提交成功')
-        return redirect(url_for('.percent'))
-    return render_template('main/task.html', form=form)
+    if current_user.is_authenticated:
+        user = User.query.filter_by(username=current_user.username).first_or_404()
+        if user == current_user and user.locked:
+            # flash('您的账户尚未激活,请联系管理员激活.', 'danger')
+            return redirect(url_for('user.index', username=current_user.username))
+        # if user == current_user and not user.active:
+        #     logout_user()
+
+        form = ResearchForm()
+        if form.validate_on_submit():
+            # title = form.title.data
+            # researcher = form.researcher.data
+            insert_form(form)
+            # flash('提交成功')
+            return redirect(url_for('.percent'))
+    else:
+        form = None
+        user = None
+    return render_template('main/task.html', form=form, user=user)
 
 
-@main_bp.route('/percent/', methods=['GET', 'POST'])
+@main_bp.route('/', methods=['GET', 'POST'])
 def percent():
     """
     任务进度
@@ -209,7 +205,8 @@ def tasks():
     :return:
     """
     page = request.args.get('page', 1, type=int)
-    pagination = Tasks.query.order_by(Tasks.timestamp.desc()).paginate(page, per_page=current_app.config['TASK_PER_PAGE'])
+    pagination = Tasks.query.order_by(Tasks.timestamp.desc()).paginate(page,
+                                                                       per_page=current_app.config['TASK_PER_PAGE'])
     posts = pagination.items
     for i, post in enumerate(posts):
         posts[i].status = StatusDict.query.filter_by(status_id=post.status).first().status_name
@@ -236,28 +233,37 @@ def edit(uid):
     :param uid:
     :return:
     """
-    form = ResearchForm()
+    if current_user.is_authenticated:
+        user = User.query.filter_by(username=current_user.username).first_or_404()
+        if user == current_user and user.locked:
+            # flash('您的账户尚未激活,请联系管理员激活.', 'danger')
+            return redirect(url_for('user.index', username=current_user.username))
 
-    if request.method == 'GET':
-        # task = Tasks.query.filter_by(id=uid).first_or_404()
-        # 通过主键获取
-        task = Tasks.query.get_or_404(uid)
-        patients = task.patients
-        form.title.data = task.title
-        form.researcher.data = task.researcher
-        form.patients.data = '\r\n'.join([patient.accession_no for patient in patients])
-        form.transport_to.data = task.transport_to
-        form.series.data = task.series
-        form.time_wait.data = task.time_wait
-        form.research_plan.data = task.research_plan
-        form.folder_name.data = task.folder_name
+        form = ResearchForm()
 
-    if request.method == 'POST':
-        if form.validate_on_submit():
-            insert_form(form)
-            # flash('提交成功')
-            return redirect(url_for('.percent'))
-    return render_template('main/task.html', form=form)
+        if request.method == 'GET':
+            # task = Tasks.query.filter_by(id=uid).first_or_404()
+            # 通过主键获取
+            task = Tasks.query.get_or_404(uid)
+            patients = task.patients
+            form.title.data = task.title
+            form.researcher.data = task.researcher
+            form.patients.data = '\r\n'.join([patient.accession_no for patient in patients])
+            form.transport_to.data = task.transport_to
+            form.series.data = task.series
+            form.time_wait.data = task.time_wait
+            form.research_plan.data = task.research_plan
+            form.folder_name.data = task.folder_name
+
+        if request.method == 'POST':
+            if form.validate_on_submit():
+                insert_form(form)
+                # flash('提交成功')
+                return redirect(url_for('.percent'))
+    else:
+        form = None
+        user = None
+    return render_template('main/task.html', form=form, user=user)
 
 
 @main_bp.route('/search')

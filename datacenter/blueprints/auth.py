@@ -54,7 +54,7 @@ def re_authenticate():
 def logout():
     logout_user()
     flash('Logout success.', 'info')
-    return redirect(url_for('main.index'))
+    return redirect(url_for('main.percent'))
 
 
 @auth_bp.route('/register', methods=['GET', 'POST'])

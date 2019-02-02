@@ -6,6 +6,7 @@
 
 {% block content %}
 {% if current_user.is_authenticated %}
+{#    {% include 'main/_header.html' %}#}
     <div class="hello-form">
         {{ render_form(form, action=request.full_path) }}
     </div>
@@ -41,7 +42,7 @@
             });
             $("#researcher,#title").change(function () {
                 var date = moment(); //Get the current date
-                $("#folder_name").val(date.format("YYYYMMDDHHMMSS") + '-' + $("#title").val()+ '-' + $("#researcher").val())
+                $("#folder_name").val(date.format("YYYYMMDDHHMMSS") + '-' + $("#title").val()+ '-' + '{{ current_user.name }}')
             })
 
         })

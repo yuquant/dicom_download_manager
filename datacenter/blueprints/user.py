@@ -12,10 +12,10 @@ from datacenter.emails import send_change_email_email
 from datacenter.extensions import db, avatars
 from datacenter.forms.user import EditProfileForm, UploadAvatarForm, CropAvatarForm, ChangeEmailForm, \
     ChangePasswordForm, NotificationSettingForm, PrivacySettingForm, DeleteAccountForm
-from datacenter.models import User, Photo, Collect
+from datacenter.models import User, Photo, Collect, Tasks
 from datacenter.notifications import push_follow_notification
 from datacenter.settings import Operations
-from datacenter.utils import generate_token, validate_token, redirect_back, flash_errors
+from datacenter.utils import generate_token, validate_token, redirect_back, flash_errors, with_dict
 
 user_bp = Blueprint('user', __name__)
 
@@ -24,16 +24,34 @@ user_bp = Blueprint('user', __name__)
 def index(username):
     user = User.query.filter_by(username=username).first_or_404()
     if user == current_user and user.locked:
-        flash('Your account is locked.', 'danger')
-
-    if user == current_user and not user.active:
-        logout_user()
+        flash('您的账户尚未激活,请联系管理员激活', 'danger')
+    # if user == current_user and not user.active:
+    #     logout_user()
 
     page = request.args.get('page', 1, type=int)
-    per_page = current_app.config['ALBUMY_PHOTO_PER_PAGE']
-    pagination = Photo.query.with_parent(user).order_by(Photo.timestamp.desc()).paginate(page, per_page)
-    photos = pagination.items
-    return render_template('user/index.html', user=user, pagination=pagination, photos=photos)
+    pagination = Tasks.query.filter(Tasks.status == 0).order_by(Tasks.priority.desc()).order_by(
+        Tasks.timestamp).paginate(page,
+                                  per_page=current_app.config['TASK_PER_PAGE'],
+                                  )
+    tasks = with_dict(pagination)
+    return render_template('user/mytasks.html', user=user, pagination=pagination, tasks=tasks)
+
+
+@user_bp.route('/<username>/finished')
+def finished(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    if user == current_user and user.locked:
+        flash('您的账户尚未激活,请联系管理员激活', 'danger')
+    # if user == current_user and not user.active:
+    #     logout_user()
+
+    page = request.args.get('page', 1, type=int)
+    pagination = Tasks.query.filter(Tasks.status == 0).order_by(Tasks.priority.desc()).order_by(
+        Tasks.timestamp).paginate(page,
+                                  per_page=current_app.config['TASK_PER_PAGE'],
+                                  )
+    tasks = with_dict(pagination)
+    return render_template('user/mytasks.html', user=user, pagination=pagination, tasks=tasks)
 
 
 @user_bp.route('/<username>/collections')
@@ -119,7 +137,7 @@ def edit_profile():
 
 @user_bp.route('/settings/avatar')
 @login_required
-@confirm_required
+# @confirm_required
 def change_avatar():
     upload_form = UploadAvatarForm()
     crop_form = CropAvatarForm()
@@ -128,7 +146,7 @@ def change_avatar():
 
 @user_bp.route('/settings/avatar/upload', methods=['POST'])
 @login_required
-@confirm_required
+# @confirm_required
 def upload_avatar():
     form = UploadAvatarForm()
     if form.validate_on_submit():
@@ -143,7 +161,7 @@ def upload_avatar():
 
 @user_bp.route('/settings/avatar/crop', methods=['POST'])
 @login_required
-@confirm_required
+# @confirm_required
 def crop_avatar():
     form = CropAvatarForm()
     if form.validate_on_submit():
