@@ -14,7 +14,7 @@
             <th>间隔</th>
             <th>设备</th>
             <th>提交时间</th>
-            {% if current_user.is_login %}
+            {% if current_user.is_authenticated %}
                 <th>操作</th>
             {% endif %}
             </thead>
@@ -28,15 +28,15 @@
                     <td>{{ task.time_wait }}</td>
                     <td>{{ task.transport_to }}</td>
                     <td>{{ task.timestamp.strftime('%Y-%m-%d') }}</td>
-                    {% if current_user.is_login %}
+                    {% if current_user.is_authenticated %}
                         <td>
-                            <form class="inline" action="{{ url_for('admin.delete_tag', tag_id=task.id) }}"
-                                  method="post">
-                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                <input type="submit"
-                                       class="btn btn-primary btn-sm" value="置顶">
-                            </form>
-                            <form class="inline" action="{{ url_for('admin.delete_tag', tag_id=task.id) }}"
+{#                            <form class="inline" action="{{ url_for('admin.delete_tag', tag_id=task.id) }}"#}
+{#                                  method="post">#}
+{#                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">#}
+{#                                <input type="submit"#}
+{#                                       class="btn btn-primary btn-sm" value="置顶">#}
+{#                            </form>#}
+                            <form class="inline" action="{{ url_for('user.cancel', task_id=task.id) }}"
                                   method="post">
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                 <input type="submit" onclick="return confirm('确定取消此任务?');"

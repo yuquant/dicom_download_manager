@@ -27,12 +27,12 @@ def login():
         user = User.query.filter_by(email=form.email.data.lower()).first()
         if user is not None and user.validate_password(form.password.data):
             if login_user(user, form.remember_me.data):
-                flash('Login success.', 'info')
+                # flash('Login success.', 'info')
                 return redirect_back()
             else:
                 flash('Your account is blocked.', 'warning')
                 return redirect(url_for('main.index'))
-        flash('Invalid email or password.', 'warning')
+        flash('邮箱或密码错误.', 'warning')
     return render_template('auth/login.html', form=form)
 
 
@@ -74,7 +74,7 @@ def register():
         db.session.commit()
         # token = generate_token(user=user, operation='confirm')
         # send_confirm_email(user=user, token=token)
-        flash('Confirm email sent, check your inbox.', 'info')
+        flash('注册成功,请登录.', 'info')
         return redirect(url_for('.login'))
     return render_template('auth/register.html', form=form)
 

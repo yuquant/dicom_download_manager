@@ -122,7 +122,7 @@ class User(db.Model, UserMixin):
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
         self.generate_avatar()
-        self.follow(self)  # follow self
+        # self.follow(self)  # follow self
         self.set_role()
 
     def __str__(self):

@@ -120,7 +120,7 @@ def percent():
     :return:
     """
     page = request.args.get('page', 1, type=int)
-    pagination = Tasks.query.filter(Tasks.status_id == 6).order_by(Tasks.priority.desc()).order_by(
+    pagination = Tasks.query.filter(Tasks.status_id == 7).order_by(Tasks.priority.desc()).order_by(
         Tasks.timestamp).paginate(page,
                                   per_page=current_app.config['TASK_PER_PAGE'],
                                   # per_page=5,
@@ -134,23 +134,6 @@ def percent():
 def explore():
     photos = Photo.query.order_by(func.random()).limit(12)
     return render_template('main/explore.html', photos=photos)
-
-
-@main_bp.route('/to-top/', methods=['POST'])
-def to_top():
-    """
-    置顶
-    TODO ajax分页显示
-    :return:
-    """
-    uid = request.form.get("id")
-    current_priority_task = Tasks.query.filter(Tasks.status_id == 6).order_by(Tasks.priority.desc()).first_or_404()
-    task = Tasks.query.filter_by(id=uid).first()
-    task.priority = current_priority_task.priority + 1
-    db.session.add(task)
-    db.session.commit()
-    # flash('{}任务已置顶'.format(task.title))
-    return redirect(url_for('.percent'))
 
 
 @main_bp.route('/cancel/', methods=['POST'])
@@ -185,21 +168,12 @@ def tasks():
     pagination = Tasks.query.order_by(Tasks.timestamp.desc()).paginate(page,
                                                                        per_page=current_app.config['TASK_PER_PAGE'])
     posts = pagination.items
-    # for i, post in enumerate(posts):
-    #     posts[i].status = StatusDict.query.filter_by(id=post.status).first().status_name
-    #     posts[i].transport_to = AEDict.query.filter_by(id=post.transport_to).first().ae_name
-    #     # posts[i].status = app.config['status_dict'][post.status]
-    #     # posts[i].transport_to = app.config['ae_dict'][post.transport_to]
-    # print('render tasks')
     return render_template('main/tasks.html', pagination=pagination, tasks=posts)
 
 
 @main_bp.route('/status/<int:uid>', methods=['GET'])
 def status(uid):
     patients = Patients.query.filter_by(task_id=uid).all()
-    for patient in patients:
-        # patient.status = app.config['status_dict'][patient.status]
-        patient.status = StatusDict.query.filter_by(id=patient.status).first().status_name
     return render_template('main/status.html', patients=patients)
 
 

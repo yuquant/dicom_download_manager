@@ -119,6 +119,55 @@ def delete_tag(tag_id):
     return redirect_back()
 
 
+@admin_bp.route('/to_top/<int:task_id>', methods=['GET', 'POST'])
+@login_required
+@permission_required('MODERATE')
+def to_top(task_id):
+    # 队列中任务优先级最高的
+    current_priority_task = Tasks.query.filter(Tasks.status_id == 7).order_by(Tasks.priority.desc()).first_or_404()
+    task = Tasks.query.get_or_404(task_id)
+    task.priority = current_priority_task.priority + 1
+    db.session.commit()
+    # flash('{}任务已置顶'.format(task.title))
+    # return redirect(url_for('.percent'))
+    return redirect_back()
+
+
+@admin_bp.route('/cancel/<int:task_id>', methods=['GET', 'POST'])
+@login_required
+@permission_required('MODERATE')
+def cancel(task_id):
+    task = Tasks.query.get_or_404(task_id)
+    if task.status_id == 7:  # 队列中任务
+        task.status_id = 2  # 取消
+        db.session.commit()
+    return redirect_back()
+
+
+@admin_bp.route('/accept/<int:task_id>', methods=['GET', 'POST'])
+@login_required
+@permission_required('MODERATE')
+def accept(task_id):
+    task = Tasks.query.get_or_404(task_id)
+    print(task.status_id)
+    if task.status_id == 6:  # 待审批任务
+        task.status_id = 7  # 接受
+        # print('accept')
+        db.session.commit()
+    return redirect_back()
+
+
+@admin_bp.route('/reject/<int:task_id>', methods=['GET', 'POST'])
+@login_required
+@permission_required('MODERATE')
+def reject(task_id):
+    task = Tasks.query.get_or_404(task_id)
+    if task.status_id == 6:
+        task.status_id = 8  # 拒绝
+        db.session.commit()
+    return redirect_back()
+
+
 @admin_bp.route('/manage/user')
 @login_required
 @permission_required('MODERATE')
@@ -179,6 +228,7 @@ def manage_tag():
 @permission_required('MODERATE')
 def manage_task():
     page = request.args.get('page', 1, type=int)
+    # 待审批任务
     pagination = Tasks.query.filter(Tasks.status_id == 6).order_by(Tasks.priority.desc()).order_by(
         Tasks.timestamp).paginate(page,
                                   per_page=current_app.config['TASK_PER_PAGE'],

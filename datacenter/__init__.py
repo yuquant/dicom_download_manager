@@ -165,7 +165,7 @@ def register_commands(app):
     def initdict():
         """初始化状态字典"""
         # StatusDict.__table__.drop()
-        status_dict = {1: '完成', 2: '取消', 3: '失败', 4: '部分完成', 5: '未知错误', 6: '待审批', 7: '队列中'}
+        status_dict = {1: '完成', 2: '被取消', 3: '失败', 4: '部分完成', 5: '未知错误', 6: '待审批', 7: '队列中', 8: '被拒绝'}
         status_obj = []
         for key, val in status_dict.items():
             status_obj.append(StatusDict(status_name=val))

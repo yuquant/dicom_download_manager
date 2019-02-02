@@ -7,7 +7,7 @@ Description :
 from flask import render_template, jsonify, Blueprint
 from flask_login import current_user
 
-from datacenter.models import User, Photo, Notification
+from datacenter.models import User, Photo, Notification, Tasks
 from datacenter.notifications import push_collect_notification, push_follow_notification
 
 ajax_bp = Blueprint('ajax', __name__)
@@ -17,8 +17,13 @@ ajax_bp = Blueprint('ajax', __name__)
 def notifications_count():
     if not current_user.is_authenticated:
         return jsonify(message='Login required.'), 403
-
-    count = Notification.query.with_parent(current_user).filter_by(is_read=False).count()
+    count1 = Tasks.query.filter(Tasks.status_id == 6).order_by(Tasks.priority.desc()).order_by(
+        Tasks.timestamp).count()
+    count2 = User.query.filter(User.locked == 1).count()
+    count = count1 + count2
+    # print(count2)
+    # print(count)
+    # count = Notification.query.with_parent(current_user).filter_by(is_read=False).count()
     return jsonify(count=count)
 
 
@@ -112,17 +117,7 @@ def bar():
     传输进度
     :return:
     """
-    # # uid = request.form.get("id")
-    # task = Tasks.query.filter_by(active=True).order_by(Tasks.timestamp.desc()).first()
-    # # if task:
-    # #     # patients = Patients.query.filter_by(task_id=task.id).count()
-    # #     # patients_left = Patients.query.filter(and_(Patients.task_id == task.id, Patients.status != 0)).count()
-    # #     # bar_percent = patients_left / patients * 100
-    # #     title = task.title
-    # # else:
-    # #     title = ''
-    # #     bar_percent = 0
-    #
+
     ret = {'title': 'biaoti', 'percent': '20'}
     # ret = app.config['BAR']
     # print(ret)

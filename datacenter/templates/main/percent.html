@@ -33,37 +33,6 @@
         }
 
 
-        function to_top(obj) {
-            {#alert('置顶'+$(obj).attr('id'))#}
-            $.ajax({
-                url: "{{ url_for("main.to_top") }}",
-                data: {id: $(obj).attr('id')},
-                type: 'POST',
-                async: false,
-                success: function () {
-                    window.location.replace("{{ url_for('main.percent') }}")
-                }
-            })
-
-        }
-
-        function cancel(obj) {
-            {#alert('取消'+$(obj).attr('id'))#}
-            console.log('取消' + $(obj).attr('id'));
-            $.ajax({
-                url: "{{ url_for("main.cancel") }}",
-                data: {id: $(obj).attr('id')},
-                type: 'POST',
-                async: false,
-                success: function () {
-                    console.log('取消成功' + $(obj).attr('id'))
-                }
-            });
-            setTimeout(function () {
-                window.location.replace("{{ url_for('main.percent') }}")
-            }, 200);
-        }
-
         // 进度条同步传输
         $(document).ready(function () {
             {#            {% if tasks | length %}#}
@@ -81,7 +50,7 @@
                 //var modal = $(this)
                 //modal.find('.modal-title').text('New message to ' + recipient)
                 //modal.find('.modal-body input').val(recipient)
-                $('#changeable').attr('id', id);
+                {#$('#changeable').attr('id', id);#}
             })
 
         })
@@ -154,13 +123,13 @@
                     <td>{{ task.timestamp.strftime('%Y-%m-%d') }}</td>
                     {% if current_user.is_admin %}
                         <td>
-                            <form class="inline" action="{{ url_for('admin.delete_tag', tag_id=task.id) }}"
+                            <form class="inline" action="{{ url_for('admin.to_top', task_id=task.id) }}"
                                   method="post">
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                 <input type="submit"
                                        class="btn btn-primary btn-sm" value="置顶">
                             </form>
-                            <form class="inline" action="{{ url_for('admin.delete_tag', tag_id=task.id) }}"
+                            <form class="inline" action="{{ url_for('admin.cancel', task_id=task.id) }}"
                                   method="post">
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                                 <input type="submit" onclick="return confirm('确定取消此任务?');"

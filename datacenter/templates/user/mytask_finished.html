@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% from 'bootstrap/pagination.html' import render_pagination %}
+{% from 'macros.html' import photo_card %}
+
+{% block title %}{{ user.name }}{% endblock %}
+
+{% block content %}
+    {% include 'user/_header.html' %}
+    <div class="list">
+        <table class="table table-striped">
+            <thead>
+            <th>研究题目</th>
+            <th>数量</th>
+            <th>间隔</th>
+            <th>设备</th>
+            <th>提交时间</th>
+
+            </thead>
+            <tbody>
+            <meta charset="UTF-8">
+            {% for task in tasks %}
+                <tr class="mb-1">
+                    <td><a href="{{ url_for('main.show',uid=task.id) }}">{{ task.title }}</a></td>
+{#                    <td>{{ task.researcher }}</td>#}
+                    <td>{{ task.patients_count }}</td>
+                    <td>{{ task.time_wait }}</td>
+                    <td>{{ task.transport_to }}</td>
+                    <td>{{ task.timestamp.strftime('%Y-%m-%d') }}</td>
+
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% if tasks %}
+
+            {{ render_pagination(pagination, align='left') }}
+
+    {% endif %}
+{% endblock %}

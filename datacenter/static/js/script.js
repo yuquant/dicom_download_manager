@@ -119,6 +119,7 @@ $(function () {
             type: 'GET',
             url: $el.data('href'),
             success: function (data) {
+                console.log(data.count)
                 if (data.count === 0) {
                     $('#notification-badge').hide();
                 } else {
@@ -222,7 +223,7 @@ $(function () {
     });
 
     if (is_authenticated) {
-        setInterval(update_notifications_count, 30000);
+        setInterval(update_notifications_count, 1000);
     }
 
     $("[data-toggle='tooltip']").tooltip({title: moment($(this).data('timestamp')).format('lll')})

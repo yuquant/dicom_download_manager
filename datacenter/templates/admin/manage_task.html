@@ -37,12 +37,12 @@
                     <td>{{ task.transport_to }}</td>
                     <td>{{ task.timestamp.strftime('%Y-%m-%d') }}</td>
                     <td>
-                        <form class="inline" action="{{ url_for('admin.delete_tag', tag_id=task.id) }}" method="post">
+                        <form class="inline" action="{{ url_for('admin.accept', task_id=task.id) }}" method="post">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                             <input type="submit"
                                    class="btn btn-primary btn-sm" value="通过">
                         </form>
-                        <form class="inline" action="{{ url_for('admin.delete_tag', tag_id=task.id) }}" method="post">
+                        <form class="inline" action="{{ url_for('admin.reject', task_id=task.id) }}" method="post">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                             <input type="submit" onclick="return confirm('确定拒绝此任务?');"
                                    class="btn btn-danger btn-sm" value="拒绝">

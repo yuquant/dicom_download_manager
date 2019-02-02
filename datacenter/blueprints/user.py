@@ -6,6 +6,7 @@ Description :
 """
 from flask import render_template, flash, redirect, url_for, current_app, request, Blueprint
 from flask_login import login_required, current_user, fresh_login_required, logout_user
+from sqlalchemy import and_
 
 from datacenter.decorators import confirm_required, permission_required
 from datacenter.emails import send_change_email_email
@@ -24,12 +25,12 @@ user_bp = Blueprint('user', __name__)
 def index(username):
     user = User.query.filter_by(username=username).first_or_404()
     if user == current_user and user.locked:
-        flash('您的账户尚未激活,请联系管理员激活', 'danger')
+        flash('您的账户尚未激活,请修改资料并联系管理员激活账户', 'danger')
     # if user == current_user and not user.active:
     #     logout_user()
 
     page = request.args.get('page', 1, type=int)
-    pagination = Tasks.query.filter(Tasks.status_id == 6).order_by(Tasks.priority.desc()).order_by(
+    pagination = Tasks.query.filter(and_(Tasks.researcher_id == current_user.id, Tasks.status_id.in_([6, 7]))).order_by(
         Tasks.timestamp).paginate(page,
                                   per_page=current_app.config['TASK_PER_PAGE'],
                                   )
@@ -40,18 +41,23 @@ def index(username):
 @user_bp.route('/<username>/finished')
 def finished(username):
     user = User.query.filter_by(username=username).first_or_404()
-    if user == current_user and user.locked:
-        flash('您的账户尚未激活,请联系管理员激活', 'danger')
-    # if user == current_user and not user.active:
-    #     logout_user()
-
     page = request.args.get('page', 1, type=int)
-    pagination = Tasks.query.filter(Tasks.status_id == 6).order_by(Tasks.priority.desc()).order_by(
+    pagination = Tasks.query.filter(and_(Tasks.researcher_id == current_user.id, Tasks.status_id.notin_([6, 7]))).order_by(Tasks.priority.desc()).order_by(
         Tasks.timestamp).paginate(page,
                                   per_page=current_app.config['TASK_PER_PAGE'],
                                   )
     posts = pagination.items
-    return render_template('user/mytasks.html', user=user, pagination=pagination, tasks=posts)
+    return render_template('user/mytask_finished.html', user=user, pagination=pagination, tasks=posts)
+
+
+@user_bp.route('/cancel/<int:task_id>', methods=['GET', 'POST'])
+@login_required
+def cancel(task_id):
+    task = Tasks.query.get_or_404(task_id)
+    # if task.status_id == 7:  # 队列中任务
+    task.status_id = 2  # 取消
+    db.session.commit()
+    return redirect_back()
 
 
 @user_bp.route('/<username>/collections')
