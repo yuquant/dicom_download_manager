@@ -5,25 +5,35 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-{% if current_user.is_authenticated %}
-{#    {% include 'main/_header.html' %}#}
-    <div class="hello-form">
-        {{ render_form(form, action=request.full_path) }}
-    </div>
-{% else %}
-    <div class="jumbotron">
-        <div class="row">
-            <div class="col-md-8">
-                <img src="{{ url_for('static', filename='images/index.jpg') }}" class="rounded img-fluid">
-            </div>
-            <div class="col-md-4 align-self-center">
-                <h1>科研数据管理平台</h1>
-                <p>让科研更有趣更高效</p>
-                <p><a class="btn btn-primary btn-lg" href="{{ url_for('auth.register') }}">点击此处注册</a></p>
+    {% if current_user.is_authenticated %}
+
+                {{ render_form(form, action=request.full_path,
+                    method="post",
+                    extra_classes=None,
+                    role="form",
+                    form_type="horizontal",
+                    horizontal_columns=('lg', 2, 10),
+                    enctype=None,
+                    button_map={},
+                    id="",
+                    novalidate=False,
+                    render_kw={}
+                ) }}
+
+    {% else %}
+        <div class="jumbotron">
+            <div class="row">
+                <div class="col-md-8">
+                    <img src="{{ url_for('static', filename='images/index.jpg') }}" class="rounded img-fluid">
+                </div>
+                <div class="col-md-4 align-self-center">
+                    <h1>科研数据管理平台</h1>
+                    <p>让科研更有趣更高效</p>
+                    <p><a class="btn btn-primary btn-lg" href="{{ url_for('auth.register') }}">点击此处注册</a></p>
+                </div>
             </div>
         </div>
-    </div>
-{% endif %}
+    {% endif %}
 {% endblock %}
 {% block scripts %}
     {{ super() }}
@@ -31,8 +41,8 @@
     {#    {{ ckeditor.config(name='research_plan') }}#}
     <script>
         $(document).ready(function () {
-            $("#transport_to").change(function () {
-                if ($(this).children('option:selected').val() !== "0") {
+            $("#transport_id").change(function () {
+                if ($(this).children('option:selected').val() !== "1") {
                     $("#folder_name").slideUp(1000);
                     $("[for='folder_name']").hide()
                 } else {
@@ -42,7 +52,7 @@
             });
             $("#researcher,#title").change(function () {
                 var date = moment(); //Get the current date
-                $("#folder_name").val(date.format("YYYYMMDDHHMMSS") + '-' + $("#title").val()+ '-' + '{{ current_user.username }}')
+                $("#folder_name").val(date.format("YYYYMMDDHHMMSS") + '-' + $("#title").val() + '-' + '{{ current_user.username }}')
             })
 
         })
