@@ -68,7 +68,6 @@ class BaseConfig:
 
     WHOOSHEE_MIN_STRING_LEN = 1
     TASK_PER_PAGE = 5
-    UPLOAD_PATH = os.path.join(basedir, 'upload')
 
 
 

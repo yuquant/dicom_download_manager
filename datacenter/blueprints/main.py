@@ -51,7 +51,7 @@ def insert_form(form):
         f.save(os.path.join(output_dir, f.filename))
         # 保存文件到数据库
         filename = random_filename(f.filename)
-        file_path = os.path.join(current_app.config['UPLOAD_PATH'], filename)
+        file_path = os.path.join(current_app.config['ALBUMY_UPLOAD_PATH'], filename)
         f.save(file_path)
         res['other_file'] = filename
     lines = res['patients'].split('\r\n')
