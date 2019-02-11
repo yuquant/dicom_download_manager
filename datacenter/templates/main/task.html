@@ -1,13 +1,13 @@
 {% extends 'base.html' %}
 {% from 'bootstrap/form.html' import render_form %}
-{#{% from 'macros.html' import photo_card with context %}#}
-
-{% block title %}Home{% endblock %}
+{% block styles %}
+    {{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/task-style.css') }}">
+{% endblock styles %}
 
 {% block content %}
     {% if current_user.is_authenticated %}
-
-                {{ render_form(form, action=request.full_path,
+        {{ render_form(form, action=request.full_path,
                     method="post",
                     extra_classes=None,
                     role="form",
@@ -19,7 +19,6 @@
                     novalidate=False,
                     render_kw={}
                 ) }}
-
     {% else %}
         <div class="jumbotron">
             <div class="row">

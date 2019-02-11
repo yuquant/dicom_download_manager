@@ -62,7 +62,7 @@ def edit_profile_admin(user_id):
     # form.website.data = user.website
     form.location.data = user.location
     form.username.data = user.username
-    form.email.data = user.email
+    # form.email.data = user.email
     # form.confirmed.data = user.confirmed
     # form.active.data = user.active
     return render_template('admin/edit_profile.html', form=form, user=user)
