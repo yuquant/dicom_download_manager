@@ -6,10 +6,9 @@ Description :
 """
 from flask import render_template, jsonify, Blueprint
 from flask_login import current_user
-
-from datacenter.models import User, Photo, Notification, Tasks
+from sqlalchemy import and_
+from datacenter.models import User, Photo, Notification, Tasks, Patients
 from datacenter.notifications import push_collect_notification, push_follow_notification
-
 ajax_bp = Blueprint('ajax', __name__)
 
 
@@ -19,12 +18,12 @@ def notifications_count():
         return jsonify(message='Login required.'), 403
     count1 = Tasks.query.filter(Tasks.status_id == 6).order_by(Tasks.priority.desc()).order_by(
         Tasks.timestamp).count()
-    count2 = User.query.filter(User.locked == 1).count()
-    count = count1 + count2
+    # count2 = User.query.filter(User.locked == 1).count()
+    # count = count1 + count2
     # print(count2)
     # print(count)
     # count = Notification.query.with_parent(current_user).filter_by(is_read=False).count()
-    return jsonify(count=count)
+    return jsonify(count=count1)
 
 
 @ajax_bp.route('/profile/<int:user_id>')
@@ -114,11 +113,18 @@ def unfollow(username):
 @ajax_bp.route('/bar/', methods=['GET'])
 def bar():
     """
-    传输进度
+    传输进度,临时采用查表统计,想提升性能可通过redis记录
     :return:
     """
-
-    ret = {'title': 'biaoti', 'percent': '20'}
+    task = Tasks.query.filter(Tasks.active).order_by(
+        Tasks.timestamp.desc()).first()
+    ret = {'title': '', 'percent': '0'}
+    if task:
+        finished_count = Patients.query.filter(and_(Patients.task_id == task.id, Patients.status_id != 7)).count()
+        count = Patients.query.filter(Patients.task_id == task.id).count()
+        ratio = str(finished_count/count*100)
+        ret = {'title': task.title, 'percent': ratio}
+    # ret = {'title': 'biaoti', 'percent': '20'}
     # ret = app.config['BAR']
-    # print(ret)
+    print(ret)
     return jsonify(ret)

@@ -298,3 +298,7 @@ footer {
 .form-group.required label {
     color: #ff6f6f;
 }
+
+.progress {
+    margin-bottom: 2em;
+}

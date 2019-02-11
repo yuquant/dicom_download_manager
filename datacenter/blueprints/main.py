@@ -45,7 +45,7 @@ def insert_form(form):
     res['folder_name'] = res['folder_name'].replace(' ', '')
     if f:
         # 存储到下载处
-        output_dir = os.path.join('downloads', res['folder_name'])
+        output_dir = os.path.join('downloads', current_user.username, res['folder_name'])
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
         f.save(os.path.join(output_dir, f.filename))
@@ -59,10 +59,14 @@ def insert_form(form):
     res.pop('patients')
     res.pop('submit')
     res.pop('csrf_token')
+    if current_user.is_admin:
+        res['status_id'] = 7
     # 一对多关系插入，参数传入一的一方
     patients_obj = []
+    patient_status_id = StatusDict.query.filter(StatusDict.status_name == '队列中').first_or_404().id
+
     for patient in patients:
-        patients_obj.append(Patients(accession_no=patient))
+        patients_obj.append(Patients(accession_no=patient, status_id=patient_status_id))
     task = Tasks(**res, patients=patients_obj, patients_count=len(patients_obj), researcher_id=current_user.id)
     db.session.add(task)
     db.session.add_all(patients_obj)

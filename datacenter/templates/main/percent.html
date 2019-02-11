@@ -60,7 +60,7 @@
 {% block content %}
     {#    <h5>当前任务:{% if tasks | length %}{{ tasks[0].title }}{% endif %}</h5>#}
     <h5>
-        <small>当前无任务</small>
+        <small>当前任务:</small>
     </h5>
     <div class="progress">
 
@@ -69,82 +69,57 @@
             <span class="sr-only">0% 完成</span>
         </div>
     </div>
-    <br>
-    <!-- 模态框（Modal） -->
-    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title" id="myModalLabel">
-                        确认
-                    </h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
-                        &times;
-                    </button>
+{#    <div class="list">#}
 
-                </div>
-                <div class="modal-body">
-                    确定取消此任务？
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭
-                    </button>
-                    <button type="button" class="btn btn-primary" id='changeable' onclick="cancel(this)">
-                        确定
-                    </button>
-                </div>
-            </div><!-- /.modal-content -->
-        </div><!-- /.modal -->
-    </div>
-    <br>
+        {% if tasks %}
+            <table class="table table-striped">
+                <thead>
+                <th>研究题目</th>
+                <th>研究者</th>
+                <th>数量</th>
+                <th>间隔</th>
+                <th>设备</th>
+                <th>提交时间</th>
+                {% if current_user.is_admin %}
+                    <th>操作</th>
+                {% endif %}
+                </thead>
+                <tbody>
+                <meta charset="UTF-8">
+                {% for task in tasks %}
+                    <tr class="mb-1">
+                        <td><a href="{{ url_for('main.show',uid=task.id) }}">{{ task.title }}</a></td>
+                        <td>{{ task.researcher.name }}</td>
+                        <td>{{ task.patients_count }}</td>
+                        <td>{{ task.time_wait }}</td>
+                        <td>{{ task.transport_to }}</td>
+                        <td>{{ task.timestamp.strftime('%Y-%m-%d') }}</td>
+                        {% if current_user.is_admin %}
+                            <td>
+                                <form class="inline" action="{{ url_for('admin.to_top', task_id=task.id) }}"
+                                      method="post">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <input type="submit"
+                                           class="btn btn-primary btn-sm" value="置顶">
+                                </form>
+                                <form class="inline" action="{{ url_for('admin.cancel', task_id=task.id) }}"
+                                      method="post">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <input type="submit" onclick="return confirm('确定取消此任务?');"
+                                           class="btn btn-danger btn-sm" value="取消">
+                                </form>
+                            </td>
 
-    <div class="list">
-        <table class="table table-striped">
-            <thead>
-            <th>研究题目</th>
-            <th>研究者</th>
-            <th>数量</th>
-            <th>间隔</th>
-            <th>设备</th>
-            <th>提交时间</th>
-            {% if current_user.is_admin %}
-                <th>操作</th>
-            {% endif %}
-            </thead>
-            <tbody>
-            <meta charset="UTF-8">
-            {% for task in tasks %}
-                <tr class="mb-1">
-                    <td><a href="{{ url_for('main.show',uid=task.id) }}">{{ task.title }}</a></td>
-                    <td>{{ task.researcher.name }}</td>
-                    <td>{{ task.patients_count }}</td>
-                    <td>{{ task.time_wait }}</td>
-                    <td>{{ task.transport_to }}</td>
-                    <td>{{ task.timestamp.strftime('%Y-%m-%d') }}</td>
-                    {% if current_user.is_admin %}
-                        <td>
-                            <form class="inline" action="{{ url_for('admin.to_top', task_id=task.id) }}"
-                                  method="post">
-                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                <input type="submit"
-                                       class="btn btn-primary btn-sm" value="置顶">
-                            </form>
-                            <form class="inline" action="{{ url_for('admin.cancel', task_id=task.id) }}"
-                                  method="post">
-                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                <input type="submit" onclick="return confirm('确定取消此任务?');"
-                                       class="btn btn-danger btn-sm" value="取消">
-                            </form>
-                        </td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {{ render_pagination(pagination) }}
+        {% else %}
+            <div class="tip"><h4>当前无进行中任务</h4></div>
+        {% endif %}
 
-                    {% endif %}
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    {% if tasks %}
-        {{ render_pagination(pagination) }}
-    {% endif %}
-    </div>
+{#    </div>#}
 
 {% endblock %}

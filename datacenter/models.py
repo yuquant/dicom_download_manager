@@ -337,8 +337,7 @@ class Patients(db.Model):
     accession_no = db.Column(db.String(20))
     err_message = db.Column(db.String(70), default='')
     task_id = db.Column(db.Integer, db.ForeignKey('tasks.id'))
-    # status_id = db.Column(db.Integer, default=0)
-    status_id = db.Column(db.Integer, db.ForeignKey('status_dict.id'), default=6)
+    status_id = db.Column(db.Integer, db.ForeignKey('status_dict.id'))
     status = db.relationship('StatusDict')
 
     # def __repr__(self):

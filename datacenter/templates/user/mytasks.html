@@ -6,7 +6,8 @@
 
 {% block content %}
     {% include 'user/_header.html' %}
-    <div class="list">
+
+    {% if tasks %}
         <table class="table table-striped">
             <thead>
             <th>研究题目</th>
@@ -23,19 +24,19 @@
             {% for task in tasks %}
                 <tr class="mb-1">
                     <td><a href="{{ url_for('main.show',uid=task.id) }}">{{ task.title }}</a></td>
-{#                    <td>{{ task.researcher }}</td>#}
+                    {#                    <td>{{ task.researcher }}</td>#}
                     <td>{{ task.patients_count }}</td>
                     <td>{{ task.time_wait }}</td>
                     <td>{{ task.transport_to }}</td>
                     <td>{{ task.timestamp.strftime('%Y-%m-%d') }}</td>
                     {% if current_user.is_authenticated %}
                         <td>
-{#                            <form class="inline" action="{{ url_for('admin.delete_tag', tag_id=task.id) }}"#}
-{#                                  method="post">#}
-{#                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">#}
-{#                                <input type="submit"#}
-{#                                       class="btn btn-primary btn-sm" value="置顶">#}
-{#                            </form>#}
+                            {#                            <form class="inline" action="{{ url_for('admin.delete_tag', tag_id=task.id) }}"#}
+                            {#                                  method="post">#}
+                            {#                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">#}
+                            {#                                <input type="submit"#}
+                            {#                                       class="btn btn-primary btn-sm" value="置顶">#}
+                            {#                            </form>#}
                             <form class="inline" action="{{ url_for('user.cancel', task_id=task.id) }}"
                                   method="post">
                                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
@@ -49,11 +50,10 @@
             {% endfor %}
             </tbody>
         </table>
-{#        {{ render_pagination(pagination) }}#}
-    </div>
-    {% if tasks %}
-{#        <div class="page-footer">#}
-            {{ render_pagination(pagination, align='left') }}
-{#        </div>#}
+        {#        <div class="page-footer">#}
+        {{ render_pagination(pagination, align='left') }}
+    {% else %}
+        <div class="tip"><h4>当前无任务</h4></div>
     {% endif %}
+
 {% endblock %}

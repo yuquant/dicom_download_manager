@@ -47,9 +47,9 @@ def edit_profile_admin(user_id):
             user.lock()
         user.role = role
         user.bio = form.bio.data
-        user.website = form.website.data
-        user.confirmed = form.confirmed.data
-        user.active = form.active.data
+        # user.website = form.website.data
+        # user.confirmed = form.confirmed.data
+        # user.active = form.active.data
         user.location = form.location.data
         user.username = form.username.data
         user.email = form.email.data
