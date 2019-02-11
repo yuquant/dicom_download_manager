@@ -110,7 +110,7 @@ def index():
             # researcher = form.researcher.data
             insert_form(form)
             # flash('提交成功')
-            return redirect(url_for('.percent'))
+            return redirect(url_for('.tasks'))
     else:
         form = None
         user = None
@@ -208,16 +208,14 @@ def edit(uid):
             form.time_wait.data = task.time_wait
             form.research_plan.data = task.research_plan
             form.folder_name.data = task.folder_name
-
+            render_template('main/task.html', form=form, user=user)
         if request.method == 'POST':
             if form.validate_on_submit():
                 insert_form(form)
                 # flash('提交成功')
-                return redirect(url_for('.percent'))
+                return redirect(url_for('.tasks'))
     else:
-        form = None
-        user = None
-    return render_template('main/task.html', form=form, user=user)
+        return redirect(url_for('auth.login'))
 
 
 @main_bp.route('/search')

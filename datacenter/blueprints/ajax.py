@@ -116,7 +116,7 @@ def bar():
     传输进度,临时采用查表统计,想提升性能可通过redis记录
     :return:
     """
-    task = Tasks.query.filter(Tasks.active).order_by(
+    task = Tasks.query.filter(and_(Tasks.active, Tasks.status_id == 7)).order_by(
         Tasks.timestamp.desc()).first()
     ret = {'title': '', 'percent': '0'}
     if task:

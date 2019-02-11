@@ -52,7 +52,7 @@ def edit_profile_admin(user_id):
         # user.active = form.active.data
         user.location = form.location.data
         user.username = form.username.data
-        user.email = form.email.data
+        # user.email = form.email.data
         db.session.commit()
         flash('Profile updated.', 'success')
         return redirect_back()
@@ -170,7 +170,7 @@ def reject(task_id):
 
 @admin_bp.route('/manage/user')
 @login_required
-@permission_required('MODERATE')
+@permission_required('ADMINISTER')
 def manage_user():
     filter_rule = request.args.get('filter', 'all')  # 'all', 'locked', 'blocked', 'administrator', 'moderator'
     page = request.args.get('page', 1, type=int)
@@ -181,7 +181,7 @@ def manage_user():
     if filter_rule == 'locked':
         filtered_users = User.query.filter_by(locked=True)
     elif filter_rule == 'blocked':
-        filtered_users = User.query.filter_by(active=False)
+        filtered_users = User.query.filter_by(locked=False)
     elif filter_rule == 'administrator':
         filtered_users = User.query.filter_by(role=administrator)
     elif filter_rule == 'moderator':

@@ -36,10 +36,10 @@ class Role(db.Model):
     @staticmethod
     def init_role():
         roles_permissions_map = {
-            'Locked': ['FOLLOW', 'COLLECT'],
-            'User': ['FOLLOW', 'COLLECT', 'COMMENT', 'UPLOAD'],
-            'Moderator': ['FOLLOW', 'COLLECT', 'COMMENT', 'UPLOAD', 'MODERATE'],
-            'Administrator': ['FOLLOW', 'COLLECT', 'COMMENT', 'UPLOAD', 'MODERATE', 'ADMINISTER']
+            # 'Locked': ['FOLLOW', 'COLLECT'],
+            '普通用户': ['FOLLOW', 'COLLECT', 'COMMENT', 'UPLOAD'],
+            '普通管理员': ['FOLLOW', 'COLLECT', 'COMMENT', 'UPLOAD', 'MODERATE'],
+            '超级管理员': ['FOLLOW', 'COLLECT', 'COMMENT', 'UPLOAD', 'MODERATE', 'ADMINISTER']
         }
 
         for role_name in roles_permissions_map:

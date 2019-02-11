@@ -80,7 +80,7 @@
                 <th>间隔</th>
                 <th>设备</th>
                 <th>提交时间</th>
-                {% if current_user.is_admin %}
+                {% if current_user.can('MODERATE') %}
                     <th>操作</th>
                 {% endif %}
                 </thead>
@@ -94,7 +94,7 @@
                         <td>{{ task.time_wait }}</td>
                         <td>{{ task.transport_to }}</td>
                         <td>{{ task.timestamp.strftime('%Y-%m-%d') }}</td>
-                        {% if current_user.is_admin %}
+                        {% if current_user.can('MODERATE') %}
                             <td>
                                 <form class="inline" action="{{ url_for('admin.to_top', task_id=task.id) }}"
                                       method="post">

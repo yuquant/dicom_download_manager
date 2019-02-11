@@ -46,7 +46,7 @@
                 </div>
                 <div class="navbar-nav ml-auto">
                     {% if current_user.is_authenticated %}
-                        {% if current_user.is_admin %}
+                        {% if current_user.can('MODERATE') %}
                             <a class="nav-item nav-link" href="{{ url_for('admin.manage_task', filter='unread') }}">
                                 <span class="oi oi-bell"></span>
                                 <span id="notification-badge"
