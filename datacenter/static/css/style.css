@@ -362,6 +362,6 @@ input:-ms-input-placeholder, textarea:-ms-input-placeholder {
     border-radius: .25rem;
     vertical-align: middle;
 }
-#submit {
-    align-items: left
+.offset-lg-2 {
+     margin-left: 0;
 }
