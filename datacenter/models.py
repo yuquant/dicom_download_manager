@@ -85,7 +85,7 @@ class Collect(db.Model):
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), unique=True, index=True)
-    email = db.Column(db.String(254), unique=True, index=True)
+    # email = db.Column(db.String(254), unique=True, index=True)
     password_hash = db.Column(db.String(128))
     name = db.Column(db.String(30))
     website = db.Column(db.String(255))
@@ -133,7 +133,7 @@ class User(db.Model, UserMixin):
 
     def set_role(self):
         if self.role is None:
-            if self.email == current_app.config['ALBUMY_ADMIN_EMAIL']:
+            if self.username == current_app.config['ADMIN_USERNAME']:
                 self.role = Role.query.filter_by(name='Administrator').first()
             else:
                 self.role = Role.query.filter_by(name='User').first()

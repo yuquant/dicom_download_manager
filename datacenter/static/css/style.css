@@ -294,11 +294,33 @@ footer {
     bottom: 30px;
 }
 
-
 .form-group.required label {
     color: #ff6f6f;
 }
 
 .progress {
     margin-bottom: 2em;
+}
+
+input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
+    color: #c7c7c7 !important;
+    font-size: 0.8rem !important;
+}
+
+input:-moz-placeholder, textarea:-moz-placeholder {
+    color: #c7c7c7 !important;
+    font-size: 0.8rem !important;
+
+}
+
+input::-moz-placeholder, textarea::-moz-placeholder {
+    color: #c7c7c7 !important;
+    font-size: 0.8rem !important;
+
+}
+
+input:-ms-input-placeholder, textarea:-ms-input-placeholder {
+    color: #c7c7c7 !important;
+    font-size: 0.8rem !important;
+
 }
