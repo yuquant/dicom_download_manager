@@ -328,3 +328,7 @@ input:-ms-input-placeholder, textarea:-ms-input-placeholder {
 .img-fluid {
     width: 100%;
 }
+
+#avatar-m {
+    width: 50%;
+}

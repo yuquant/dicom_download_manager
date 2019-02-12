@@ -32,7 +32,7 @@ def login():
             else:
                 flash('Your account is blocked.', 'warning')
                 return redirect(url_for('main.index'))
-        flash('邮箱或密码错误.', 'warning')
+        flash('用户名或密码错误.', 'warning')
     return render_template('auth/login.html', form=form)
 
 

@@ -6,7 +6,7 @@
     <div class="col-md-3">
         <a href="{% if current_user == user %}{{ url_for('.change_avatar') }}{% else %}#{% endif %}"
            title="Change avatar">
-            <img class="img-fluid rounded" src="{{ url_for('main.get_avatar', filename=user.avatar_m) }}">
+            <img class="img-fluid rounded" id="avatar-m" src="{{ url_for('main.get_avatar', filename=user.avatar_m) }}">
         </a>
     </div>
     <div class="col-md-9">
