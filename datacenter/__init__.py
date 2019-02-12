@@ -129,62 +129,36 @@ def register_commands(app):
         click.echo('Done.')
 
     @app.cli.command()
-    @click.option('--user', default=10, help='Quantity of users, default is 10.')
-    @click.option('--follow', default=30, help='Quantity of follows, default is 50.')
-    @click.option('--photo', default=30, help='Quantity of photos, default is 500.')
-    @click.option('--tag', default=20, help='Quantity of tags, default is 500.')
-    @click.option('--collect', default=50, help='Quantity of collects, default is 500.')
-    @click.option('--comment', default=100, help='Quantity of comments, default is 500.')
-    def forge(user, follow, photo, tag, collect, comment):
-        """Generate fake data."""
-
-        from datacenter.fakes import fake_admin, fake_comment, fake_follow, fake_photo, fake_tag, fake_user, fake_collect
-
+    # @click.option('--user', default=10, help='Quantity of users, default is 10.')
+    # @click.option('--follow', default=30, help='Quantity of follows, default is 50.')
+    # @click.option('--photo', default=30, help='Quantity of photos, default is 500.')
+    # @click.option('--tag', default=20, help='Quantity of tags, default is 500.')
+    # @click.option('--collect', default=50, help='Quantity of collects, default is 500.')
+    # @click.option('--comment', default=100, help='Quantity of comments, default is 500.')
+    # def forge(user, follow, photo, tag, collect, comment):
+    # from datacenter.fakes import fake_admin, fake_comment, fake_follow, fake_photo, fake_tag, fake_user, fake_collect
+    def forge():
+        """Generate dict."""
         db.drop_all()
         db.create_all()
 
-        click.echo('Initializing the roles and permissions...')
         Role.init_role()
-        click.echo('Generating the administrator...')
-        fake_admin()
-        click.echo('Generating %d users...' % user)
-        fake_user(user)
-        click.echo('Generating %d follows...' % follow)
-        fake_follow(follow)
-        click.echo('Generating %d tags...' % tag)
-        fake_tag(tag)
-        click.echo('Generating %d photos...' % photo)
-        fake_photo(photo)
-        click.echo('Generating %d collects...' % photo)
-        fake_collect(collect)
-        click.echo('Generating %d comments...' % comment)
-        fake_comment(comment)
-        click.echo('Done.')
-
-    @app.cli.command()
-    def initdict():
-        """初始化状态字典"""
-        # StatusDict.__table__.drop()
-        status_dict = {1: '完成', 2: '被取消', 3: '失败', 4: '部分完成', 5: '未知错误', 6: '待审批', 7: '队列中', 8: '被拒绝'}
-        status_obj = []
-        for key, val in status_dict.items():
-            status_obj.append(StatusDict(status_name=val))
-        db.session.add_all(status_obj)
-        db.session.commit()
-        click.echo('Initialized status dict.')
-
-    @app.cli.command()
-    def initaedict():
-        """初始化AE列表"""
-        ae_list = [
-            ['DOWNLOAD', '下载', 1],
-            ['SMIT_Q', '新网PACS', 2],
-            ['ISDPHILIPS', '飞利浦ISD', 3]
-                   ]
-        ae_obj = []
-        for ae_title, ae_name, ae_id in ae_list:
-            ae_obj.append(AEDict(ae_title=ae_title, ae_name=ae_name))
-        db.session.add_all(ae_obj)
-        db.session.commit()
+        click.echo('Initialized the roles and permissions...')
+        AEDict.init_aedict()
         click.echo('Initialized ae dict.')
-
+        StatusDict.init_statusdict()
+        click.echo('Initialized status dict.')
+        # fake_admin()
+        # click.echo('Generating %d users...' % user)
+        # fake_user(user)
+        # click.echo('Generating %d follows...' % follow)
+        # fake_follow(follow)
+        # click.echo('Generating %d tags...' % tag)
+        # fake_tag(tag)
+        # click.echo('Generating %d photos...' % photo)
+        # fake_photo(photo)
+        # click.echo('Generating %d collects...' % photo)
+        # fake_collect(collect)
+        # click.echo('Generating %d comments...' % comment)
+        # fake_comment(comment)
+        # click.echo('Done.')

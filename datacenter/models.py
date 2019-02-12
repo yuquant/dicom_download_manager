@@ -134,9 +134,9 @@ class User(db.Model, UserMixin):
     def set_role(self):
         if self.role is None:
             if self.username == current_app.config['ADMIN_USERNAME']:
-                self.role = Role.query.filter_by(name='Administrator').first()
+                self.role = Role.query.filter_by(name='超级管理员').first()
             else:
-                self.role = Role.query.filter_by(name='User').first()
+                self.role = Role.query.filter_by(name='普通用户').first()
             db.session.commit()
 
     def validate_password(self, password):
@@ -183,12 +183,12 @@ class User(db.Model, UserMixin):
 
     def lock(self):
         self.locked = True
-        self.role = Role.query.filter_by(name='Locked').first()
+        # self.role = Role.query.filter_by(name='Locked').first()
         db.session.commit()
 
     def unlock(self):
         self.locked = False
-        self.role = Role.query.filter_by(name='User').first()
+        # self.role = Role.query.filter_by(name='User').first()
         db.session.commit()
 
     def block(self):
@@ -327,6 +327,17 @@ class StatusDict(db.Model):
     status_name = db.Column(db.String(20), unique=True)
     # status_id = db.Column(db.Integer, unique=True)
 
+    @staticmethod
+    def init_statusdict():
+        """初始化状态字典"""
+        # StatusDict.__table__.drop()
+        status_dict = {1: '完成', 2: '被取消', 3: '失败', 4: '部分完成', 5: '未知错误', 6: '待审批', 7: '队列中', 8: '被拒绝'}
+        status_obj = []
+        for key, val in status_dict.items():
+            status_obj.append(StatusDict(status_name=val))
+        db.session.add_all(status_obj)
+        db.session.commit()
+
     def __repr__(self):
         return self.status_name
 
@@ -348,6 +359,20 @@ class AEDict(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     ae_title = db.Column(db.String(20), unique=True)
     ae_name = db.Column(db.String(20), unique=True)
+
+    @staticmethod
+    def init_aedict():
+        """初始化AE列表"""
+        ae_list = [
+            ['DOWNLOAD', '下载', 1],
+            ['SMIT_Q', '新网PACS', 2],
+            ['ISDPHILIPS', '飞利浦ISD', 3]
+                   ]
+        ae_obj = []
+        for ae_title, ae_name, ae_id in ae_list:
+            ae_obj.append(AEDict(ae_title=ae_title, ae_name=ae_name))
+        db.session.add_all(ae_obj)
+        db.session.commit()
 
     def __str__(self):
         return self.ae_name

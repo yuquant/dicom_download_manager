@@ -21,9 +21,6 @@ from datacenter.notifications import push_comment_notification, push_collect_not
 from datacenter.utils import rename_image, resize_image, redirect_back, flash_errors, \
     random_filename
 
-# from datacenter import create_app
-# app = create_app()
-# app.app_context().push()
 main_bp = Blueprint('main', __name__)
 
 

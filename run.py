@@ -9,7 +9,7 @@ from dcmtks.back_process import back_server
 from datacenter import create_app
 #
 #
-app = create_app()
+app = create_app(config_name='production')
 # from app import app
 # app.app_context().push()
 
