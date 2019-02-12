@@ -27,6 +27,7 @@ def back_server():
 
     while True:
         # 队列中任务
+        flag = 1  # 未置顶,task没有变化
         task = Tasks.query.filter(Tasks.status_id == 7).order_by(Tasks.priority.desc()).order_by(
             Tasks.timestamp).first()
         # 查询任务状态为待处理的优先级最高,同一优先级按时间排序
@@ -43,12 +44,20 @@ def back_server():
                 output_dir = os.path.join('downloads', task.folder_name, 'images')
                 dt = DcmTrans(server_ip=server_ip, server_port=server_port, aec=aec, aet=aet,
                               my_port=client_port, output_dir=output_dir)
-                current_id = task.id
                 for i, patient in enumerate(patients):
                     # 实时查询当前任务是否被取消
                     # ratio = str((i+1) / len(patients) * 100)
                     # print(ratio)
-                    task = Tasks.query.filter(Tasks.id == current_id).first()
+                    # task = Tasks.query.filter(Tasks.id == current_id).first()
+                    last_task = task
+                    task = Tasks.query.filter(Tasks.status_id == 7).order_by(Tasks.priority.desc()).order_by(
+                        Tasks.timestamp).first()
+                    if last_task.id != task.id:
+                        last_task.active = False
+                        db.session.commit()
+                        print(last_task.id, task.id)
+                        flag = 0
+                        break
                     # 如果任务状态为待处理则继续进行
                     if task.status_id == 7:  # 队列中
                         accession_no = patient.accession_no
@@ -71,10 +80,8 @@ def back_server():
                 err_count = Patients.query.filter(
                     and_(Patients.task_id == task.id, Patients.status_id == 3)).count()
                 count = Patients.query.filter(Patients.task_id == task.id).count()
-                print('数量', task.title, err_count, count)
                 failed_percent = err_count / count * 100
-                print(failed_percent)
-                if task.status_id == 7:
+                if flag and task.status_id == 7:
                     if failed_percent == 100:
                         # print('任务失败')
                         task.status_id = 3  # 任务失败
