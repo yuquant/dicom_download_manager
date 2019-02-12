@@ -7,15 +7,12 @@ Description :
 from threading import Thread
 from dcmtks.back_process import back_server
 from datacenter import create_app
-#
-#
+
 app = create_app(config_name='production')
-# from app import app
-# app.app_context().push()
 
 if __name__ == "__main__":
     app.config['back_task'] = Thread(target=back_server)
     app.config['back_task'].setDaemon(True)
     app.config['back_task'].start()
-    app.run(host='0.0.0.0', port=8000, debug=False, threaded=False)
-    # app.run(host='127.0.0.1', port=8000, debug=False, threaded=False)
+    # debug=False才能保证后台程序正常运行
+    app.run(host='0.0.0.0', port=8000, debug=False, threaded=True)

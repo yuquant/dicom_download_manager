@@ -1,0 +1,37 @@
+.form-control, .form-control-file {
+    display: inline;
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    line-height: 1.5rem;
+    color: #495057;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: 0 .25rem .25rem 0;
+    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+    vertical-align: middle;
+
+}
+
+.form-control-label {
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    padding: .375rem .75rem;
+    margin-bottom: 0;
+    margin-right: -2rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #495057;
+    text-align: center;
+    white-space: nowrap;
+    background-color: #e9ecef;
+    border: 1px solid #ced4da;
+    border-radius: .25rem;
+    vertical-align: middle;
+}
+.offset-lg-2 {
+     margin-left: 0;
+}

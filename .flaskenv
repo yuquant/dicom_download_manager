@@ -1,2 +1,2 @@
-FLASK_APP=albumy
+FLASK_APP=datacenter
 FLASK_ENV=development
