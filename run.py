@@ -8,7 +8,7 @@ from threading import Thread
 from dcmtks.back_process import back_server
 from datacenter import create_app
 
-app = create_app(config_name='production')
+app = create_app(config_name='development')
 
 if __name__ == "__main__":
     app.config['back_task'] = Thread(target=back_server)
