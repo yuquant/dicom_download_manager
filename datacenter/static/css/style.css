@@ -324,3 +324,7 @@ input:-ms-input-placeholder, textarea:-ms-input-placeholder {
     font-size: 0.8rem !important;
 
 }
+
+.img-fluid {
+    width: 100%;
+}

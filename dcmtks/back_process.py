@@ -11,8 +11,6 @@ from configparser import ConfigParser
 from datacenter import db, create_app
 from datacenter.models import Tasks, AEDict, Patients, StatusDict
 from dcmtks.pydcmtk import DcmTrans
-# from flask import current_app
-# from app import app
 
 
 def back_server():
@@ -45,7 +43,6 @@ def back_server():
                 output_dir = os.path.join('downloads', task.folder_name, 'images')
                 dt = DcmTrans(server_ip=server_ip, server_port=server_port, aec=aec, aet=aet,
                               my_port=client_port, output_dir=output_dir)
-                failed_num = 0
                 current_id = task.id
                 for i, patient in enumerate(patients):
                     # 实时查询当前任务是否被取消
@@ -66,7 +63,6 @@ def back_server():
                             print(e)
                             patient.err_message = str(e)[:70]
                             patient.status_id = 3  # 失败
-                            failed_num += 1
                         db.session.commit()
                         if i != len(patients) - 1:
                             sleep(task.time_wait * 60)
@@ -88,8 +84,6 @@ def back_server():
                         task.status_id = 1  # 完成
                     else:
                         raise(Warning, 'Unexpected failed_percent:{}'.format(failed_percent))
-                # task.active = False
-                # db.session.commit()
 
             except Exception as e:
                 print('未知错误', e)
