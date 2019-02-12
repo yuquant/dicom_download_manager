@@ -209,7 +209,7 @@ class User(db.Model, UserMixin):
 
     @property
     def is_admin(self):
-        return self.role.name == 'Administrator'
+        return self.role.name == '超级管理员'
 
     @property
     def is_active(self):

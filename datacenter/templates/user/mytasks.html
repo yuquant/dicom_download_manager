@@ -23,7 +23,7 @@
             <meta charset="UTF-8">
             {% for task in tasks %}
                 <tr class="mb-1">
-                    <td><a href="{{ url_for('main.show',uid=task.id) }}">{{ task.title }}</a></td>
+                    <td><a href="{{ url_for('main.edit',uid=task.id) }}">{{ task.title }}</a></td>
                     {#                    <td>{{ task.researcher }}</td>#}
                     <td>{{ task.patients_count }}</td>
                     <td>{{ task.time_wait }}</td>

@@ -59,7 +59,7 @@ def insert_form(form):
     res.pop('patients')
     res.pop('submit')
     res.pop('csrf_token')
-    if current_user.is_admin:
+    if current_user.can('MODERATE'):
         res['status_id'] = 7
     # 一对多关系插入，参数传入一的一方
     patients_obj = []
@@ -208,7 +208,7 @@ def edit(uid):
             form.time_wait.data = task.time_wait
             form.research_plan.data = task.research_plan
             form.folder_name.data = task.folder_name
-            render_template('main/task.html', form=form, user=user)
+            return render_template('main/task.html', form=form, user=user)
         if request.method == 'POST':
             if form.validate_on_submit():
                 insert_form(form)
