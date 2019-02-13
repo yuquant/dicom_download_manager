@@ -332,3 +332,7 @@ input:-ms-input-placeholder, textarea:-ms-input-placeholder {
 #avatar-m {
     width: 50%;
 }
+
+.my-lg-0 {
+    margin-left:2rem
+}

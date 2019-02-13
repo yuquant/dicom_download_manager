@@ -3,6 +3,9 @@
 {% block title %}Search: {{ q }}{% endblock %}
 
 {% block content %}
+        <div class="page-header">
+        <h2><small>搜索结果:</small> {{ q }}</h2>
+    </div>
     {% include "main/_tasklist.html" %}
 
 {% endblock %}
