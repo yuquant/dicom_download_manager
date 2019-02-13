@@ -215,6 +215,26 @@ def edit(uid):
         return redirect(url_for('auth.login'))
 
 
+# @main_bp.route('/search')
+# def search():
+#     q = request.args.get('q', '')
+#     if q == '':
+#         flash('Enter keyword about photo, user or tag.', 'warning')
+#         return redirect_back()
+#
+#     category = request.args.get('category', 'photo')
+#     page = request.args.get('page', 1, type=int)
+#     per_page = current_app.config['ALBUMY_SEARCH_RESULT_PER_PAGE']
+#     if category == 'user':
+#         pagination = User.query.whooshee_search(q).paginate(page, per_page)
+#     elif category == 'tag':
+#         pagination = Tag.query.whooshee_search(q).paginate(page, per_page)
+#     else:
+#         pagination = Photo.query.whooshee_search(q).paginate(page, per_page)
+#     results = pagination.items
+#     return render_template('main/search.html', q=q, results=results, pagination=pagination, category=category)
+
+
 @main_bp.route('/search')
 def search():
     q = request.args.get('q', '')
@@ -222,17 +242,11 @@ def search():
         flash('Enter keyword about photo, user or tag.', 'warning')
         return redirect_back()
 
-    category = request.args.get('category', 'photo')
     page = request.args.get('page', 1, type=int)
-    per_page = current_app.config['ALBUMY_SEARCH_RESULT_PER_PAGE']
-    if category == 'user':
-        pagination = User.query.whooshee_search(q).paginate(page, per_page)
-    elif category == 'tag':
-        pagination = Tag.query.whooshee_search(q).paginate(page, per_page)
-    else:
-        pagination = Photo.query.whooshee_search(q).paginate(page, per_page)
-    results = pagination.items
-    return render_template('main/search.html', q=q, results=results, pagination=pagination, category=category)
+    per_page = current_app.config['TASK_PER_PAGE']
+    pagination = Tasks.query.whooshee_search(q).paginate(page, per_page)
+    tasks = pagination.items
+    return render_template('main/search.html', q=q, tasks=tasks, pagination=pagination)
 
 
 @main_bp.route('/notifications')

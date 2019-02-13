@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% from 'bootstrap/pagination.html' import render_pagination %}
+{% from 'macros.html' import photo_card, user_card with context %}
+
+{% block title %}Search: {{ q }}{% endblock %}
+
+{% block content %}
+    <div class="page-header">
+        <h1>搜索结果: {{ q }}</h1>
+    </div>
+    <div class="row">
+        <div class="col-md-9">
+            {% if results %}
+                <h5>{{ results|length }} results</h5>
+                {% for item in results %}
+                    {% if category == 'photo' %}
+                        {{ photo_card(item) }}
+                    {% elif category == 'user' %}
+                        {{ user_card(item) }}
+                    {% else %}
+                        <a class="badge badge-light" href="{{ url_for('.show_tag', tag_id=item.id) }}">
+                            {{ item.name }} {{ item.photos|length }}
+                        </a>
+                    {% endif %}
+                {% endfor %}
+
+            {% else %}
+                <h5 class="tip">没有检索到相关信息</h5>
+            {% endif %}
+        </div>
+    </div>
+    {% if results %}
+        <div class="page-footer">
+            {{ render_pagination(pagination, align='right') }}
+        </div>
+    {% endif %}
+{% endblock %}

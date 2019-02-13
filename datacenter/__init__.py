@@ -73,7 +73,9 @@ def register_template_context(app):
     @app.context_processor
     def make_template_context():
         if current_user.is_authenticated:
-            notification_count = Notification.query.with_parent(current_user).filter_by(is_read=False).count()
+            notification_count = Tasks.query.filter(Tasks.status_id == 6).order_by(Tasks.priority.desc()).order_by(
+        Tasks.timestamp).count()
+            # notification_count = Notification.query.with_parent(current_user).filter_by(is_read=False).count()
         else:
             notification_count = None
         return dict(notification_count=notification_count)

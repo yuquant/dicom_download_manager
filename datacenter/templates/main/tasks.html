@@ -1,38 +1,7 @@
 {% extends 'base.html' %}
 {#{% from 'bootstrap/form.html' import render_form %}#}
-{% from 'bootstrap/pagination.html' import render_pagination %}
+
 {% block content %}
-    {#   {% include "_tasklist.html" %}#}
-    <table class="table table-striped">
-        <thead>
-        <th>研究题目</th>
-        <th>研究者</th>
-        <th>数量</th>
-        <th>间隔</th>
-        <th>设备</th>
-        <th>提交时间</th>
-        <th>状态</th>
-{#        <th>操作</th>#}
-        </thead>
-        <tbody>
-        <meta charset="UTF-8">
-        {% for task in tasks %}
-            <tr class="mb-1">
-                <td><a href="{{ url_for('main.edit',uid=task.id) }}">{{ task.title }}</a></td>
-                <td>{{ task.researcher.name }}</td>
-                <td>{{ task.patients_count }}</td>
-                <td>{{ task.time_wait }}</td>
-                <td>{{ task.transport_to }}</td>
-                <td>{{ task.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
-                <td><a href="{{ url_for('main.status',uid=task.id) }}">{{ task.status.status_name }}</a></td>
-{#                <td><a href="{{ url_for('main.edit',uid=task.id) }}">#}
-{#                    <small>编辑</small>#}
-{#                </a></td>#}
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-    {% if tasks %}
-    {{ render_pagination(pagination) }}
-    {% endif %}
+    {% include "main/_tasklist.html" %}
+
 {% endblock %}

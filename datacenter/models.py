@@ -299,6 +299,7 @@ def delete_photos(**kwargs):
 
 
 # one to many
+@whooshee.register_model('title')
 class Tasks(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(50), index=True)

@@ -36,13 +36,13 @@
                     {{ render_nav_item('main.index', '任务添加') }}
                     {{ render_nav_item('main.percent', '任务进度') }}
                     {{ render_nav_item('main.tasks', '所有任务') }}
-                    {#                    <form class="form-inline my-2 my-lg-0" action="{{ url_for('main.search') }}">#}
-                    {#                        <input type="text" name="q" class="form-control mr-sm-1" placeholder="Photo, tag or user"#}
-                    {#                               required>#}
-                    {#                        <button class="btn btn-light my-2 my-sm-0" type="submit">#}
-                    {#                            <span class="oi oi-magnifying-glass"></span>#}
-                    {#                        </button>#}
-                    {#                    </form>#}
+                                        <form class="form-inline my-2 my-lg-0" action="{{ url_for('main.search') }}">
+                                            <input type="text" name="q" class="form-control mr-sm-1" placeholder="Photo, tag or user"
+                                                   required>
+                                            <button class="btn btn-light my-2 my-sm-0" type="submit">
+                                                <span class="oi oi-magnifying-glass"></span>
+                                            </button>
+                                        </form>
                 </div>
                 <div class="navbar-nav ml-auto">
                     {% if current_user.is_authenticated %}
