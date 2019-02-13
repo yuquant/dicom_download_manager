@@ -39,10 +39,10 @@ def insert_form(form):
         res['folder_name'] = '{timestamp}-{title}-{researcher}'.format(timestamp=timestring,
                                                                        title=res['title'],
                                                                        researcher=res['researcher'])
-    res['folder_name'] = res['folder_name'].replace(' ', '')
+    res['folder_name'] = os.path.join('downloads', current_user.username, res['folder_name'].replace(' ', ''))
     if f:
         # 存储到下载处
-        output_dir = os.path.join('downloads', current_user.username, res['folder_name'])
+        output_dir = res['folder_name']
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
         f.save(os.path.join(output_dir, f.filename))
@@ -115,6 +115,7 @@ def index():
 
 
 @main_bp.route('/', methods=['GET', 'POST'])
+@login_required
 def percent():
     """
     任务进度
@@ -137,22 +138,6 @@ def explore():
     return render_template('main/explore.html', photos=photos)
 
 
-@main_bp.route('/cancel/', methods=['POST'])
-def cancel():
-    """
-    取消任务
-    :return:
-    """
-    uid = request.form.get("id")
-    task = Tasks.query.filter_by(id=uid).first_or_404()
-    if task.status == 0:
-        task.status = 2  # 取消
-        db.session.add(task)
-        db.session.commit()
-        # flash('{}任务已取消'.format(task.title))
-    return redirect(url_for('.percent'))
-
-
 @main_bp.route('/show/<int:uid>', methods=['GET'])
 def show(uid):
     task = Tasks.query.filter_by(id=uid).first_or_404()
@@ -160,6 +145,7 @@ def show(uid):
 
 
 @main_bp.route('/tasks/', methods=['GET'])
+@login_required
 def tasks():
     """
     所有任务列表（分页显示）
@@ -173,6 +159,7 @@ def tasks():
 
 
 @main_bp.route('/status/<int:uid>', methods=['GET'])
+@login_required
 def status(uid):
     patients = Patients.query.filter_by(task_id=uid).all()
     return render_template('main/status.html', patients=patients)
@@ -236,6 +223,7 @@ def edit(uid):
 
 
 @main_bp.route('/search')
+@login_required
 def search():
     q = request.args.get('q', '')
     if q == '':

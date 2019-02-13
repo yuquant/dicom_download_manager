@@ -41,7 +41,7 @@ def back_server():
                     series_desc = None
                 else:
                     series_desc = task.series
-                output_dir = os.path.join('downloads', task.folder_name, 'images')
+                output_dir = os.path.join(task.folder_name, 'images')
                 dt = DcmTrans(server_ip=server_ip, server_port=server_port, aec=aec, aet=aet,
                               my_port=client_port, output_dir=output_dir)
                 for i, patient in enumerate(patients):
