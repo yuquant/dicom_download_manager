@@ -129,7 +129,7 @@
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
     <script type="text/javascript">
         var csrf_token = "{{ csrf_token() }}";
-        {% if current_user.is_authenticated %}
+        {% if current_user.can('MODERATE') %}
             var is_authenticated = true;
         {% else %}
             var is_authenticated = false;
