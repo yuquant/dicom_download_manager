@@ -47,17 +47,6 @@ def back_server():
                 for i, patient in enumerate(patients):
                     # 实时查询当前任务是否被取消
                     # ratio = str((i+1) / len(patients) * 100)
-                    # print(ratio)
-                    # task = Tasks.query.filter(Tasks.id == current_id).first()
-                    last_task = task
-                    task = Tasks.query.filter(Tasks.status_id == 7).order_by(Tasks.priority.desc()).order_by(
-                        Tasks.timestamp).first()
-                    if last_task.id != task.id:
-                        last_task.active = False
-                        db.session.commit()
-                        print(last_task.id, task.id)
-                        flag = 0
-                        break
                     # 如果任务状态为待处理则继续进行
                     if task.status_id == 7:  # 队列中
                         accession_no = patient.accession_no
@@ -77,11 +66,21 @@ def back_server():
                             sleep(task.time_wait * 60)
                     elif task.status_id == 2:  # 任务被取消
                         patient.status_id = 2  # 取消
-                err_count = Patients.query.filter(
-                    and_(Patients.task_id == task.id, Patients.status_id == 3)).count()
-                count = Patients.query.filter(Patients.task_id == task.id).count()
-                failed_percent = err_count / count * 100
+
+                    # 判断任务是否被切换,切换则跳出for循环
+                    new_task = Tasks.query.filter(Tasks.status_id == 7).order_by(Tasks.priority.desc()).order_by(
+                        Tasks.timestamp).first()
+                    if (not new_task) or new_task.id != task.id:
+                        task.active = False
+                        db.session.commit()
+                        flag = 0
+                        break
+
                 if flag and task.status_id == 7:
+                    err_count = Patients.query.filter(
+                        and_(Patients.task_id == task.id, Patients.status_id == 3)).count()
+                    count = Patients.query.filter(Patients.task_id == task.id).count()
+                    failed_percent = err_count / count * 100
                     if failed_percent == 100:
                         # print('任务失败')
                         task.status_id = 3  # 任务失败
