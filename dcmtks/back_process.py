@@ -9,7 +9,7 @@ import os
 from sqlalchemy import and_
 from configparser import ConfigParser
 from datacenter import db, create_app
-from datacenter.models import Tasks, AEDict, Patients, StatusDict
+from datacenter.models import Tasks, AEDict, Patients
 from dcmtks.pydcmtk import DcmTrans
 
 

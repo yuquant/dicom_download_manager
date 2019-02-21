@@ -146,8 +146,8 @@ class DcmTrans(object):
 
             if series_desc[0] == '':
                 QueryRetrieveLevel = 'STUDY'
-                cmd = """movescu -S {server_ip} {server_port} -aec {aec} -aet {aet} -aem {aet} --port {my_port} \
-                    -od {output_dir} -k QueryRetrieveLevel={QueryRetrieveLevel} -k StudyInstanceUID={StudyInstanceUID} \
+                cmd = """movescu -S {server_ip} {server_port} -aec '{aec}' -aet '{aet}' -aem '{aet}' --port '{my_port}' \
+                    -od '{output_dir}' -k QueryRetrieveLevel='{QueryRetrieveLevel}' -k StudyInstanceUID='{StudyInstanceUID}' \
                       --timeout 300""".format(
                       server_ip=self.server_ip,
                       server_port=self.server_port,
@@ -160,9 +160,9 @@ class DcmTrans(object):
 
             else:
                 QueryRetrieveLevel = 'SERIES'
-                cmd = """movescu -S {server_ip} {server_port} -aec {aec} -aet {aet} -aem {aet} --port {my_port} \
-                    -od {output_dir} -k QueryRetrieveLevel={QueryRetrieveLevel} -k StudyInstanceUID={StudyInstanceUID} \
-                    -k SeriesInstanceUID={SeriesInstanceUID}  --timeout 300""".format(
+                cmd = """movescu -S {server_ip} {server_port} -aec '{aec}' -aet '{aet}' -aem '{aet}' --port '{my_port}' \
+                    -od '{output_dir}' -k QueryRetrieveLevel='{QueryRetrieveLevel}' -k StudyInstanceUID='{StudyInstanceUID}' \
+                    -k SeriesInstanceUID='{SeriesInstanceUID}'  --timeout 300""".format(
                       server_ip=self.server_ip,
                       server_port=self.server_port,
                       aec=self.aec, aet=self.aet,

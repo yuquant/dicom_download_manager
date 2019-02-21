@@ -88,7 +88,7 @@ def insert_form(form):
 #     return render_template('main/index.html', pagination=pagination, photos=photos, tags=tags, Collect=Collect)
 
 
-@main_bp.route('/task/', methods=['GET', 'POST'])
+@main_bp.route('/', methods=['GET', 'POST'])
 def index():
     """
     任务提交页面
@@ -114,7 +114,7 @@ def index():
     return render_template('main/task.html', form=form, user=user)
 
 
-@main_bp.route('/', methods=['GET', 'POST'])
+@main_bp.route('/percent', methods=['GET', 'POST'])
 @login_required
 def percent():
     """
