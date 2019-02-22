@@ -17,15 +17,6 @@ import os
 
 class DcmTrans(object):
     def __init__(self, server_ip, server_port, aec, aet, my_port, output_dir='.'):
-        """
-
-        :param server_ip:
-        :param server_port:
-        :param aec:
-        :param aet:
-        :param my_port:
-        :param output_dir: 下载目录的父目录
-        """
         self.server_ip = str(server_ip)
         self.server_port = str(server_port)
         self.aec = str(aec)
@@ -46,7 +37,10 @@ class DcmTrans(object):
         findscu -S 10.0.2.5 104 -aec SMIT_LOCAL -aet SIMPLEDICOM -k QueryRetrieveLevel=SERIES -k AccessionNumber=P10463706 -k SeriesDescription -k StudyInstanceUID  -k SeriesInstanceUID
         movescu -S 10.0.2.5 104 -aec SMIT_LOCAL -aet SIMPLEDICOM -aem SIMPLEDICOM --port 10000 -od /tmp/A000950892 -k QueryRetrieveLevel=SERIES -k StudyInstanceUID=1.2.840.113564.143313582280.5700.635186415302296489.506 -k SeriesInstanceUID=1.3.46.670589.11.38206.5.0.8996.2013110610015734338
         movescu -S 10.0.2.5 104 -aec SMIT_LOCAL -aet SIMPLEDICOM -aem SIMPLEDICOM --port 10000 -od /tmp/A000950892 -k QueryRetrieveLevel=STUDY -k StudyInstanceUID=1.2.840.113564.143313582280.5700.635186415302296489.506 -k SeriesInstanceUID=1.3.46.670589.11.38206.5.0.8996.2013110610015734338
-        findscu -S 192.168.1.100 104 -aec STORESCP -aet SIMPLEDICOM -k QueryRetrieveLevel=SERIES -k AccessionNumber=MR004126 -k SeriesDescription -k StudyInstanceUID  -k SeriesInstanceUID
+        findscu -S 192.168.231.18 104 -aec med_imFIR -aet dwtest4 -k QueryRetrieveLevel=SERIES -k AccessionNumber=A000950892 -k SeriesDescription -k StudyInstanceUID  -k SeriesInstanceUID
+        findscu -S 192.168.231.18 104 -aec med_imFIR -aet dwtest4 -k QueryRetrieveLevel=SERIES -k AccessionNumber=A001873983 -k SeriesDescription -k StudyInstanceUID  -k SeriesInstanceUID
+        movescu -S 192.168.231.18 104 -aec med_imFIR -aet dwtest4 -aem dwtest4 --port 10000 -od tmp/ -k QueryRetrieveLevel=STUDY -k StudyInstanceUID=1.2.840.113564.143313591524.3208.636225732687445043.183
+        判断逻辑：如果序列描述为空，匹配study uid，如果有序列描述，匹配所有
 
         :param AccessionNumber:
         :param PatientID:
@@ -61,62 +55,35 @@ class DcmTrans(object):
             server_ip=self.server_ip, server_port=self.server_port, aec=self.aec, aet=self.aet, my_port=self.port,
             QueryRetrieveLevel=QueryRetrieveLevel, AccessionNumber=AccessionNumber,
             )
-        # print(repr(cmd))
+        print(cmd)
         response = subprocess.run(
             cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
         res = self._if_err(response)
         try:
-            desc = re.findall(': \(0008,103e\) LO \[(.*?)\]', res)[0].strip()
+            study_uid = re.findall(': \(0020,000d\) UI \[(.*?)\]', res)[0].strip()  # 先查看是否有study uid
         except IndexError:
-            raise RuntimeError('Pacs did not connected,', res)
-
-        # series_desc = re.findall(': \(0008,103e\) LO \[(.*?)\]', res)
-        # series_desc = [x.strip() for x in series_desc]
-        # # print(series_desc)
-        # target_series_desc = list(set(series_desc).intersection(SeriesDescription))
-        # StudyInstanceUID = re.findall(': \(0020,000d\) UI \[(.*?)\]', res)
-        # SeriesInstanceUID = re.findall(': \(0020,000e\) UI \[(.*?)\]', res)
-        # # docker中匹配字符为'1.2.840.113564.143313582280.5700.635186415302296489.506\x00'，将会引起错误，所以加.strip('\x00')
-        # if len(target_series_desc) == 1:
-        #     index = series_desc.index(target_series_desc[0])
-        # else:
-        #     # 自动转为STUDY模式
-        #     index = 0
-        #     print(target_series_desc, 'TARGET SERIES NOT FOUND AND WILL GET THE WHOLE SERIES!')
-        #     target_series_desc = ['']
-        #
-        # if not(len(series_desc) == len(StudyInstanceUID) and len(StudyInstanceUID) == len(SeriesInstanceUID)):
-        #     print('Respose are not proper regex:{0},{1},{2}'.format(
-        #         len(series_desc), len(StudyInstanceUID), len(SeriesInstanceUID)))
-        # res = {'PatientID': PatientID,
-        #        'StudyInstanceUID': StudyInstanceUID[index].strip('\x00'),
-        #        'SeriesInstanceUID': SeriesInstanceUID[index].strip('\x00'),
-        #        'SeriesDescription': target_series_desc[0]
-        #        }
-        raw_match = [re.findall(
-            ': \(0008,103e\) LO \[(.*?)\][\s\S]*: \(0020,000d\) UI \[(.*?)\][\s\S]*: \(0020,000e\) UI \[(.*?)\]',
-            x) for x in re.split('-{10,}', res)]
-        info_groups = [x[0] for x in raw_match if len(x) > 0]
-        target_list = [val for val in info_groups if val[0].strip() in SeriesDescription]
-        # docker中匹配字符为'1.2.840.113564.143313582280.5700.635186415302296489.506\x00'，将会引起错误，所以加.strip('\x00')
-        # if len(target_list) != 1:
-        #     target = info_groups[0]
-        #     print(SeriesDescription, 'TARGET SERIES NOT FOUND AND WILL GET THE WHOLE SERIES!')
-        # elif SeriesDescription == ('',):
-        #     target = target_list[0]
-        # else:
-        #     raise ValueError('{0}:TARGET SERIES NOT FOUND{1}'.format(AccessionNumber, SeriesDescription))
-
+            raise RuntimeError('StudyInstanceUID not found,', res)
         if SeriesDescription == ('',):
-            target = info_groups[0]
-        elif len(target_list) == 1:
-            target = target_list[0]
+            res = {'SeriesDescription': '',
+                   'StudyInstanceUID': study_uid.strip('\x00'),
+                   'SeriesInstanceUID': '',
+                   }
         else:
-            raise ValueError('{0}: Target series not found {1}'.format(AccessionNumber, SeriesDescription))
-        res = {'SeriesDescription': target[0].strip(),
-               'StudyInstanceUID': target[1].strip('\x00'),
-               'SeriesInstanceUID': target[2].strip('\x00'),
-               }
+            raw_match = [re.findall(
+                ': \(0008,103e\) LO \[(.*?)\][\s\S]*: \(0020,000d\) UI \[(.*?)\][\s\S]*: \(0020,000e\) UI \[(.*?)\]',
+                x) for x in re.split('-{10,}', res)]
+            info_groups = [x[0] for x in raw_match if len(x) > 0]
+            target_list = [val for val in info_groups if val[0].strip() in SeriesDescription]
+            # docker中匹配字符为'1.2.840.113564.143313582280.5700.635186415302296489.506\x00'，将会引起错误，所以加.strip('\x00')
+
+            if len(target_list) >= 1:
+                target = target_list[0]
+            else:
+                raise ValueError('{0}: Target series not found {1}'.format(AccessionNumber, SeriesDescription))
+            res = {'SeriesDescription': target[0].strip(),
+                   'StudyInstanceUID': target[1].strip('\x00'),
+                   'SeriesInstanceUID': target[2].strip('\x00'),
+                   }
         return res
 
     def download_dcms(self, AccessionNumber, SeriesDescription=None):
@@ -127,7 +94,7 @@ class DcmTrans(object):
         :param SeriesDescription: str,所有可能的序列描述列表,用逗号隔开
         :return: dict, PatientID, StudyInstanceUID, SeriesInstanceUID, SeriesDescription
         """
-        safe = re.match('^[a-zA-Z0-9]+$', AccessionNumber)
+        safe = re.match('^[a-zA-Z0-9]+$', AccessionNumber.strip())
         # print(not safe)
         if not safe:
             raise ValueError('Illegal AccessionNumber: '+AccessionNumber)
@@ -146,8 +113,8 @@ class DcmTrans(object):
 
             if series_desc[0] == '':
                 QueryRetrieveLevel = 'STUDY'
-                cmd = """movescu -S {server_ip} {server_port} -aec '{aec}' -aet '{aet}' -aem '{aet}' --port '{my_port}' \
-                    -od '{output_dir}' -k QueryRetrieveLevel='{QueryRetrieveLevel}' -k StudyInstanceUID='{StudyInstanceUID}' \
+                cmd = """movescu -S {server_ip} {server_port} -aec {aec} -aet {aet} -aem {aet} --port {my_port} \
+                    -od '{output_dir}' -k QueryRetrieveLevel={QueryRetrieveLevel} -k StudyInstanceUID={StudyInstanceUID} \
                       --timeout 300""".format(
                       server_ip=self.server_ip,
                       server_port=self.server_port,
@@ -160,9 +127,9 @@ class DcmTrans(object):
 
             else:
                 QueryRetrieveLevel = 'SERIES'
-                cmd = """movescu -S {server_ip} {server_port} -aec '{aec}' -aet '{aet}' -aem '{aet}' --port '{my_port}' \
-                    -od '{output_dir}' -k QueryRetrieveLevel='{QueryRetrieveLevel}' -k StudyInstanceUID='{StudyInstanceUID}' \
-                    -k SeriesInstanceUID='{SeriesInstanceUID}'  --timeout 300""".format(
+                cmd = """movescu -S {server_ip} {server_port} -aec {aec} -aet {aet} -aem {aet} --port {my_port} \
+                    -od '{output_dir}' -k QueryRetrieveLevel={QueryRetrieveLevel} -k StudyInstanceUID={StudyInstanceUID} \
+                    -k SeriesInstanceUID={SeriesInstanceUID}  --timeout 300""".format(
                       server_ip=self.server_ip,
                       server_port=self.server_port,
                       aec=self.aec, aet=self.aet,
@@ -177,11 +144,6 @@ class DcmTrans(object):
                 os.makedirs(output_dir)
             else:
                 print(output_dir, 'Dir exist')
-
-            # print(cmd)
-            # err = os.system(cmd)
-            # if err == 1:
-            #     raise ValueError('dicom did not be downloaded')
 
             response = subprocess.run(
                 cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
@@ -204,7 +166,7 @@ class DcmTrans(object):
         :param SeriesDescription: 序列描述
         :return:
         """
-        safe = re.match('^[a-zA-Z0-9]+$', AccessionNumber)
+        safe = re.match('^[a-zA-Z0-9]+$', AccessionNumber.strip())
         if not safe:
             raise ValueError('Illegal AccessionNumber: '+AccessionNumber)
         else:
