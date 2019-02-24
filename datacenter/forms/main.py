@@ -4,19 +4,14 @@ Author : Jason
 Github : https://github.com/yuquant
 Description :
 """
-from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, TextAreaField
-from wtforms.validators import DataRequired, Optional, Length, Regexp
+from wtforms.validators import Optional, Length, Regexp
 
 from flask_wtf import FlaskForm
 from flask_ckeditor import CKEditorField
 # from flask_wtf.file import FileField, FileRequired, FileAllowed
-from wtforms import StringField, SubmitField, FileField, IntegerField, SelectField, FloatField, TextAreaField
+from wtforms import StringField, SubmitField, FileField, SelectField, FloatField, TextAreaField
 from wtforms.validators import DataRequired, Length, InputRequired, NumberRange
 from datacenter.models import AEDict
-# from run import app
-# from datacenter.extensions import db
-# from datacenter import create_app
 
 
 class DescriptionForm(FlaskForm):
