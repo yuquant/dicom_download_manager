@@ -29,13 +29,18 @@ def insert_form(form):
     f = form.other_file.data
     if not res['folder_name']:
         timestring = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
-        res['folder_name'] = '{timestamp}-{title}-{researcher}'.format(timestamp=timestring,
-                                                                       title=res['title'],
-                                                                       researcher=res['researcher'])
+        res['folder_name'] = '{title}'.format(title=res['title'])
+
+        # res['folder_name'] = '{timestamp}-{title}-{researcher}'.format(timestamp=timestring,
+        #                                                                title=res['title'],
+        #                                                                researcher=res['researcher'])
+
     res['folder_name'] = res['folder_name'].replace(' ', '')
     if f:
         # 存储到下载处 TODO:通过配置文件实现
-        output_dir = os.path.join('downloads', current_user.username, res['folder_name'].replace(' ', ''))
+        # output_dir = os.path.join('downloads', current_user.username, res['folder_name'].replace(' ', ''))
+        output_dir = os.path.join('downloads', current_user.username, 'data', res['folder_name'])
+
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
         f.save(os.path.join(output_dir, f.filename))

@@ -41,7 +41,8 @@ def back_server():
                     series_desc = None
                 else:
                     series_desc = task.series
-                output_dir = os.path.join('downloads', task.researcher.username, task.folder_name, 'images')
+                output_dir = make_output_dir_for_dicom(task)
+                # output_dir = os.path.join('downloads', task.researcher.username, task.folder_name, 'images')
                 print(output_dir)
                 dt = DcmTrans(server_ip=server_ip, server_port=server_port, aec=aec, aet=aet,
                               my_port=client_port, output_dir=output_dir)
@@ -99,5 +100,14 @@ def back_server():
             db.session.commit()
 
         sleep(10)
+
+
+
+def make_output_dir_for_dicom(task):
+    output_dir = os.path.join('downloads', task.researcher.username, 'data', task.folder_name, task.timestamp)
+    return output_dir
+
 # if __name__ == "__main__":
 #     back_server()
+
+
