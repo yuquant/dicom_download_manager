@@ -6,14 +6,14 @@ Description :
 """
 from time import sleep
 import os
-import logging
 import traceback
 from sqlalchemy import and_
 from configparser import ConfigParser
 from datacenter import db, create_app
 from datacenter.models import Tasks, AEDict, Patients
 from dcmtks.pydcmtk import DcmTrans
-LOGGER = logging.getLogger(__name__)
+from dcmtks.log import get_logger
+LOGGER = get_logger(__name__)
 
 
 class PatientStatus:
