@@ -104,7 +104,7 @@ def back_server():
 
 
 def make_output_dir_for_dicom(task):
-    output_dir = os.path.join('downloads', task.researcher.username, 'data', task.folder_name, str(task.timestamp))
+    output_dir = os.path.join('downloads', task.researcher.username, 'data', task.folder_name,task.timestamp.strftime('%Y%m%d%H%M%S'))
     return output_dir
 
 # if __name__ == "__main__":
