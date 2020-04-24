@@ -1,5 +1,5 @@
 # 影像数据管理工具
-dicom数据队列下载工具,账号注册,下载任务提交到审批
+
 *医学影像科研数据管理更便捷*
 以下提供了三种部署方式
 ## 用pipenv构建
@@ -22,8 +22,7 @@ $ flask run
 ```
 pip install -r requirements.txt
 set FLASK_APP=datacenter
-flask initdb
-flask init
+flask forge
 ```
 
 ## docker 运行
@@ -32,10 +31,10 @@ flask init
 cd center
 docker build -t webenv:2.01 .
 ```
-运行,挂载目录必须是完整路径
+运行
 ```
 cd ..
-docker run -v ~/center:/app -p 8000:8000 -p 10001:10001 -i -t webenv:2.01 python run.py
+docker run -v /home/public/liuweipeng/datacenter2/center/:/app -v /home/pictures/WinShare/DcmData/:/app/downloads -v /etc/localtime:/etc/localtime:ro -p 8080:8000 -p 10002:10002 -i -t webenv:2.01 python run.py
 ```
 
 

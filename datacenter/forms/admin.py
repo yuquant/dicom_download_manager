@@ -4,7 +4,7 @@ Author : Jason
 Github : https://github.com/yuquant
 Description : 
 """
-from wtforms import  SelectField, SubmitField
+from wtforms import StringField, SelectField, BooleanField, SubmitField
 from wtforms import ValidationError
 from wtforms.validators import DataRequired, Length, Email
 
@@ -26,6 +26,9 @@ class EditProfileAdminForm(EditProfileForm):
         self.user = user
 
     def validate_username(self, field):
-        if field.data != self.user.username and User.query.filter_by(username=field.data).first():
+        if field.data != self.user.username and User.query.filter_by(email=field.data).first():
             raise ValidationError('该用户名已经被注册.')
 
+    def validate_email(self, field):
+        if field.data != self.user.email and User.query.filter_by(email=field.data).first():
+            raise ValidationError('该邮箱已经被注册.')

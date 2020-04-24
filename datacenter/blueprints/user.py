@@ -5,14 +5,18 @@ Github : https://github.com/yuquant
 Description :
 """
 from flask import render_template, flash, redirect, url_for, current_app, request, Blueprint
-from flask_login import login_required, current_user, fresh_login_required
+from flask_login import login_required, current_user, fresh_login_required, logout_user
 from sqlalchemy import and_
 
+from datacenter.decorators import confirm_required, permission_required
+from datacenter.emails import send_change_email_email
 from datacenter.extensions import db, avatars
-from datacenter.forms.user import EditProfileForm, UploadAvatarForm, CropAvatarForm, \
-    ChangePasswordForm, DeleteAccountForm
-from datacenter.models import User, Tasks
-from datacenter.utils import redirect_back, flash_errors
+from datacenter.forms.user import EditProfileForm, UploadAvatarForm, CropAvatarForm, ChangeEmailForm, \
+    ChangePasswordForm, NotificationSettingForm, PrivacySettingForm, DeleteAccountForm
+from datacenter.models import User, Photo, Collect, Tasks
+from datacenter.notifications import push_follow_notification
+from datacenter.settings import Operations
+from datacenter.utils import generate_token, validate_token, redirect_back, flash_errors
 
 user_bp = Blueprint('user', __name__)
 
@@ -54,6 +58,66 @@ def cancel(task_id):
     task.status_id = 2  # 取消
     db.session.commit()
     return redirect_back()
+
+
+@user_bp.route('/<username>/collections')
+def show_collections(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    page = request.args.get('page', 1, type=int)
+    per_page = current_app.config['ALBUMY_PHOTO_PER_PAGE']
+    pagination = Collect.query.with_parent(user).order_by(Collect.timestamp.desc()).paginate(page, per_page)
+    collects = pagination.items
+    return render_template('user/collections.html', user=user, pagination=pagination, collects=collects)
+
+
+@user_bp.route('/follow/<username>', methods=['POST'])
+@login_required
+@confirm_required
+@permission_required('FOLLOW')
+def follow(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    if current_user.is_following(user):
+        flash('Already followed.', 'info')
+        return redirect(url_for('.index', username=username))
+
+    current_user.follow(user)
+    flash('User followed.', 'success')
+    if user.receive_follow_notification:
+        push_follow_notification(follower=current_user, receiver=user)
+    return redirect_back()
+
+
+@user_bp.route('/unfollow/<username>', methods=['POST'])
+@login_required
+def unfollow(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    if not current_user.is_following(user):
+        flash('Not follow yet.', 'info')
+        return redirect(url_for('.index', username=username))
+
+    current_user.unfollow(user)
+    flash('User unfollowed.', 'info')
+    return redirect_back()
+
+
+@user_bp.route('/<username>/followers')
+def show_followers(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    page = request.args.get('page', 1, type=int)
+    per_page = current_app.config['ALBUMY_USER_PER_PAGE']
+    pagination = user.followers.paginate(page, per_page)
+    follows = pagination.items
+    return render_template('user/followers.html', user=user, pagination=pagination, follows=follows)
+
+
+@user_bp.route('/<username>/following')
+def show_following(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    page = request.args.get('page', 1, type=int)
+    per_page = current_app.config['ALBUMY_USER_PER_PAGE']
+    pagination = user.following.paginate(page, per_page)
+    follows = pagination.items
+    return render_template('user/following.html', user=user, pagination=pagination, follows=follows)
 
 
 @user_bp.route('/settings/profile', methods=['GET', 'POST'])
@@ -131,6 +195,59 @@ def change_password():
         flash('Password updated.', 'success')
         return redirect(url_for('.index', username=current_user.username))
     return render_template('user/settings/change_password.html', form=form)
+
+
+@user_bp.route('/settings/change-email', methods=['GET', 'POST'])
+@fresh_login_required
+def change_email_request():
+    form = ChangeEmailForm()
+    if form.validate_on_submit():
+        token = generate_token(user=current_user, operation=Operations.CHANGE_EMAIL, new_email=form.email.data.lower())
+        send_change_email_email(to=form.email.data, user=current_user, token=token)
+        flash('Confirm email sent, check your inbox.', 'info')
+        return redirect(url_for('.index', username=current_user.username))
+    return render_template('user/settings/change_email.html', form=form)
+
+
+@user_bp.route('/change-email/<token>')
+@login_required
+def change_email(token):
+    if validate_token(user=current_user, token=token, operation=Operations.CHANGE_EMAIL):
+        flash('Email updated.', 'success')
+        return redirect(url_for('.index', username=current_user.username))
+    else:
+        flash('Invalid or expired token.', 'warning')
+        return redirect(url_for('.change_email_request'))
+
+
+@user_bp.route('/settings/notification', methods=['GET', 'POST'])
+@login_required
+def notification_setting():
+    form = NotificationSettingForm()
+    if form.validate_on_submit():
+        current_user.receive_collect_notification = form.receive_collect_notification.data
+        current_user.receive_comment_notification = form.receive_comment_notification.data
+        current_user.receive_follow_notification = form.receive_follow_notification.data
+        db.session.commit()
+        flash('Notification settings updated.', 'success')
+        return redirect(url_for('.index', username=current_user.username))
+    form.receive_collect_notification.data = current_user.receive_collect_notification
+    form.receive_comment_notification.data = current_user.receive_comment_notification
+    form.receive_follow_notification.data = current_user.receive_follow_notification
+    return render_template('user/settings/edit_notification.html', form=form)
+
+
+@user_bp.route('/settings/privacy', methods=['GET', 'POST'])
+@login_required
+def privacy_setting():
+    form = PrivacySettingForm()
+    if form.validate_on_submit():
+        current_user.public_collections = form.public_collections.data
+        db.session.commit()
+        flash('Privacy settings updated.', 'success')
+        return redirect(url_for('.index', username=current_user.username))
+    form.public_collections.data = current_user.public_collections
+    return render_template('user/settings/edit_privacy.html', form=form)
 
 
 @user_bp.route('/settings/account/delete', methods=['GET', 'POST'])
