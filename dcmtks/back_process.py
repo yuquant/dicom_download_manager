@@ -126,7 +126,29 @@ def back_server():
 
 
 def make_output_dir_for_dicom(task):
-    output_dir = os.path.join('downloads', task.researcher.username, 'data', task.folder_name,task.timestamp.strftime('%Y%m%d%H%M%S'))
+    # if task.researcher.username == 'gpu45':
+    #     """
+    #     需要通过挂载的方式将对应目录挂到此处
+    #     """
+    #
+    #     if '/' in task.folder_name:
+    #         output_dir = os.path.join('zhangsuisui', task.folder_name,
+    #                                   )
+    #     else:
+    #         output_dir = os.path.join('zhangsuisui/data', task.folder_name,
+    #                                   task.timestamp.strftime('%Y%m%d%H%M%S'))
+    # elif task.researcher.username == 'hjh':
+    #     if '/' in task.folder_name:
+    #         output_dir = os.path.join('hjh', task.folder_name,
+    #                                   )
+    #     else:
+    #         output_dir = os.path.join('hjh/data', task.folder_name,
+    #                                   task.timestamp.strftime('%Y%m%d%H%M%S'))
+    if '/' in task.folder_name:
+        output_dir = os.path.join('downloads', task.researcher.username, task.folder_name)
+        # 将/downloads/gpu45 目录挂载到 73服务器的zhangsuisui文件夹，在docker中修改路径
+    else:
+        output_dir = os.path.join('downloads', task.researcher.username, 'data', task.folder_name,task.timestamp.strftime('%Y%m%d%H%M%S'))
     return output_dir
 
 # if __name__ == "__main__":
