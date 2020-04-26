@@ -145,7 +145,8 @@ def make_output_dir_for_dicom(task):
     #         output_dir = os.path.join('hjh/data', task.folder_name,
     #                                   task.timestamp.strftime('%Y%m%d%H%M%S'))
     if '/' in task.folder_name:
-        output_dir = os.path.join('downloads', task.researcher.username, task.folder_name)
+        relative_path = '/'.join(task.folder_name.strip('/').lstrip('/').split('/')[1:])
+        output_dir = os.path.join('downloads', task.researcher.username, relative_path)
         # 将/downloads/gpu45 目录挂载到 73服务器的zhangsuisui文件夹，在docker中修改路径
     else:
         output_dir = os.path.join('downloads', task.researcher.username, 'data', task.folder_name,task.timestamp.strftime('%Y%m%d%H%M%S'))
