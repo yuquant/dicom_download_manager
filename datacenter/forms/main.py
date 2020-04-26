@@ -44,7 +44,7 @@ class ResearchForm(FlaskForm):
     transport_id = SelectField('DICOM图像传输*', coerce=int, choices='', validators=[InputRequired()])
 
     folder_name = StringField('下载后的文件夹命名',
-                              validators=[Length(0, 50)],
+                              validators=[Length(0, 100)],
                               render_kw={'placeholder': '不修改则按照默认规则命名', 'title': '不修改则按照默认规则命名'},)
     time_wait = FloatField('传输间隔（分钟）', default=5, validators=[NumberRange(0, 20)])
     series = StringField('序列描述',
